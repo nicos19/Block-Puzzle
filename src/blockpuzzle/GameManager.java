@@ -32,6 +32,7 @@ public class GameManager extends JFrame {
         blockCombosPanel.setPreferredSize(new Dimension(300, 100));
         blockCombosPanel.setMaximumSize(new Dimension(300, 100));
 
+        setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         pack();
     }
@@ -39,7 +40,7 @@ public class GameManager extends JFrame {
 
     public static void main(String[] args) {
         GameManager gameManager = new GameManager();
-        gameManager.setSize(300, 450);
+        gameManager.setPreferredSize(new Dimension(300, 450));
         gameManager.setVisible(true);
     }
 

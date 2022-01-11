@@ -65,8 +65,11 @@ public class BlockCombosPanel extends JPanel {
      */
     private void drawBlockCombos(Graphics g) {
         for (int i = 0; i < 3; i++) {
-            g.drawRect(10 + i * 55, 10, 50, 50);
+            g.drawRect(15 + i * 65, 30, 55, 55);
         }
+        g.drawRect(15 + 3 * 65 + 20, 30, 55, 55);
+
+        g.drawString("Rotations: 23", 15, 20);
 
 
     }

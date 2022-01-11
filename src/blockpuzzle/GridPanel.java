@@ -26,13 +26,12 @@ public class GridPanel extends JPanel {
         // draw empty grid
         for (int x = 0; x < grid.getSize(); x++) {
             for (int y = 0; y < grid.getSize(); y++) {
-                g.drawRect(7 + x * cellSize,
-                           7 + y * cellSize,
+                g.drawRect(15 + x * cellSize,
+                           15 + y * cellSize,
                               cellSize, cellSize);
             }
         }
 
-        g.drawLine(1, 1, 282, 1);
     }
 
     @Override protected void paintComponent(Graphics g) {
