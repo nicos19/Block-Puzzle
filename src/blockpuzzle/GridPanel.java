@@ -4,26 +4,40 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * A GridPanel is an extended JPanel that contains the visual representation of a Grid.
+ * A GridPanel is an extended JPanel that contains
+ * the logical and visual representation of a Grid.
  */
 public class GridPanel extends JPanel {
-    private Grid grid;
+    private Grid grid = new Grid();
     private int posX;  // x-coordinate of the grid's upper left corner (in pixels)
     private int posY;  // y-coordinate of the grid's upper left corner (in pixels)
-    private final int cellSize = 50;
+    private final int cellSize = 30;
 
     GridPanel() {
         // add MouseInteractionManager
 
     }
 
-    private void drawGrid() {
+    /**
+     * Draws the grid and its content (i.e. its inserted blocks).
+     * @param g the Graphics object given by paintComponent()
+     */
+    private void drawGrid(Graphics g) {
+        // draw empty grid
+        for (int x = 0; x < grid.getSize(); x++) {
+            for (int y = 0; y < grid.getSize(); y++) {
+                g.drawRect(7 + x * cellSize,
+                           7 + y * cellSize,
+                              cellSize, cellSize);
+            }
+        }
 
+        g.drawLine(1, 1, 282, 1);
     }
 
     @Override protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawGrid();
+        drawGrid(g);
     }
 
 }

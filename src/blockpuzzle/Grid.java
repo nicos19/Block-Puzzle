@@ -18,4 +18,12 @@ public class Grid {
         }
     }
 
+    /**
+     * Gets the size of this Grid.
+     * @return the size
+     */
+    int getSize() {
+        return size;
+    }
+
 }
