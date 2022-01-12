@@ -39,13 +39,8 @@ public class GridCell {
 
     /**
      * Sets empty = true.
-     * Throws IllegalStateException if GridCell is empty.
      */
     void clear() {
-        if (empty) {
-            throw new IllegalStateException("clear() must not be called " +
-                    "when GridCell is empty.");
-        }
         empty = true;
     }
 

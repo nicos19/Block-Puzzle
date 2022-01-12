@@ -11,6 +11,8 @@ public class GameManager extends JFrame {
     private JPanel topPanel = new JPanel();
     private GridPanel gridPanel = new GridPanel();
     private BlockCombosPanel blockCombosPanel = new BlockCombosPanel();
+    private MouseInteractionManager mouseInteractionManager
+            = new MouseInteractionManager(this, gridPanel, blockCombosPanel);
 
     GameManager() {
         // set layout
@@ -21,10 +23,19 @@ public class GameManager extends JFrame {
         add(gridPanel);
         add(blockCombosPanel);
 
+        // add MouseInteractionListener to panels
+        gridPanel.addMouseListener(mouseInteractionManager);
+        gridPanel.addMouseMotionListener(mouseInteractionManager);
+        blockCombosPanel.addMouseListener(mouseInteractionManager);
+        blockCombosPanel.addMouseMotionListener(mouseInteractionManager);
+
+
         topPanel.setBackground(Color.BLUE);
         gridPanel.setBackground(Color.YELLOW);
         blockCombosPanel.setBackground(Color.RED);
 
+
+        // set panels' sizes
         topPanel.setPreferredSize(new Dimension(300, 50));
         topPanel.setMaximumSize(new Dimension(300, 50));
         gridPanel.setPreferredSize(new Dimension(300, 300));

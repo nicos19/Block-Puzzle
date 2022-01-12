@@ -21,6 +21,14 @@ public class BlockCombo {
     }
 
     /**
+     * Gets the formation of the BlockCombo.
+     * @return the comboFormation
+     */
+    List<int[]> getComboFormation() {
+        return comboFormation;
+    }
+
+    /**
      * Rotates the BlockCombo 90° to the right.
      */
     void rotate() {
@@ -48,5 +56,6 @@ public class BlockCombo {
             rotate();
         }
     }
+
 
 }

@@ -72,6 +72,7 @@ public class BlockCombosPanel extends JPanel {
         g.drawString("Rotations: 23", 15, 20);
 
 
+
     }
 
     @Override protected void paintComponent(Graphics g) {
