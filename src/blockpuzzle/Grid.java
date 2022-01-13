@@ -135,7 +135,34 @@ public class Grid {
      * @return true if BlockCombo can be inserted, false otherwise
      */
     boolean canInsertBlockCombo(GridCell cell, BlockCombo combo) {
+        for (int[] block : combo.getComboFormation()) {
+            // find position of target cell for block
+            int targetCellX = cell.getPosX() + block[0];
+            int targetCellY = cell.getPosY() + block[1];
+            if (positionOutOfBounds(targetCellX, targetCellY)) {
+                // block would be placed out of bounds of the Grid
+                return false;
+            }
 
+            // check if target cell is empty
+            GridCell targetCell = getCellAt(targetCellX, targetCellY);
+            if (!targetCell.isEmpty()) {
+                // block's target cell is non-empty
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if the given position is outside the Grid.
+     * @param posX x-coordinate of the questioned position
+     * @param posY y-coordinate of the questioned position
+     * @return true if the position is outside the Grid, false otherwise
+     */
+    private boolean positionOutOfBounds(int posX, int posY) {
+        return posX < 0 || posX >= size || posY < 0 || posY >= size;
     }
 
 
