@@ -8,10 +8,10 @@ import java.util.List;
  * A GameManager is an extended JFrame responsible for managing and visualizing the game.
  */
 public class GameManager extends JFrame {
-    private JPanel topPanel = new JPanel();
-    private GridPanel gridPanel = new GridPanel();
-    private BlockCombosPanel blockCombosPanel = new BlockCombosPanel();
-    private MouseInteractionManager mouseInteractionManager
+    private final JPanel topPanel = new JPanel();
+    private final GridPanel gridPanel = new GridPanel(this);
+    private final BlockCombosPanel blockCombosPanel = new BlockCombosPanel();
+    private final MouseInteractionManager mouseInteractionManager
             = new MouseInteractionManager(this, gridPanel, blockCombosPanel);
 
     GameManager() {
@@ -46,6 +46,17 @@ public class GameManager extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         pack();
+    }
+
+    /**
+     * Starts next round of the game if current round is over, i.e. if
+     * player used all of its available BlockCombos.
+     * Next round results in three new BlockCombos becoming available.
+     */
+    void tryNextRound() {
+        if (blockCombosPanel.openBlockCombosIsEmpty()) {
+            blockCombosPanel.generateNewBlockCombos();
+        }
     }
 
 

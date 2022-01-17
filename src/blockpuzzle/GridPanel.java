@@ -8,15 +8,19 @@ import java.awt.*;
  * the logical and visual representation of a Grid.
  */
 public class GridPanel extends JPanel {
-    private Grid grid = new Grid();
-    private int posX = 11;  // x-coordinate of the grid's upper left corner (in pixels)
-    private int posY = 11;  // y-coordinate of the grid's upper left corner (in pixels)
+    private Grid grid;
+
+    // x-coordinate of the grid's upper left corner (in pixels)
+    private final int posX = 11;
+    // y-coordinate of the grid's upper left corner (in pixels)
+    private final int posY = 11;
 
     // a cell has cellSize * cellSize pixels
     private final int cellSize = 31;
     private final Rectangle gridArea;
 
-    GridPanel() {
+    GridPanel(GameManager gameManager) {
+        grid = new Grid(gameManager);
         gridArea = new Rectangle(posX, posY,
                                 grid.getSize() * cellSize,
                                 grid.getSize() * cellSize);

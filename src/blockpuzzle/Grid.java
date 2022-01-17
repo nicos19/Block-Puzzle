@@ -7,10 +7,12 @@ import java.util.List;
  * A Grid is a play field for the game consisting of GridCells.
  */
 public class Grid {
+    private GameManager gameManager;
     private final int size = 9;
-    private GridCell[][] cells;
+    private final GridCell[][] cells;
 
-    Grid() {
+    Grid(GameManager manager) {
+        gameManager = manager;
         cells = new GridCell[size][size];
 
         // fill Grid with GridCells
@@ -125,6 +127,9 @@ public class Grid {
             // fill target cell
             targetCell.fill();
         }
+
+        // GameManager starts next round if necessary
+        gameManager.tryNextRound();
     }
 
     /**

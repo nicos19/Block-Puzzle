@@ -57,5 +57,38 @@ public class BlockCombo {
         }
     }
 
+    /**
+     * Gets the offset (in blocks) for drawing this BlockCombo into BlockCombosPanel.
+     * offset [off_x, off_y] means that the BlockCombo must be shifted off_x blocks
+     * in x-direction and off_y blocks in y-direction.
+     * @return the calculated offset
+     */
+    double[] getDrawOffset() {
+        int blocksLeftOfStartBlock = 0;
+        int blocksRightOfStartBlock = 0;
+        int blocksAboveStartBlock = 0;
+        int blocksUnderStartBlock = 0;
+
+        for (int[] block : comboFormation) {
+            if (block[0] > 0 && block[0] > blocksRightOfStartBlock) {
+                blocksRightOfStartBlock += 1;
+            }
+            else if (block[0] < 0 && block[0] < blocksLeftOfStartBlock) {
+                blocksLeftOfStartBlock -= 1;
+            }
+            if (block[1] > 0 && block[1] > blocksUnderStartBlock) {
+                blocksUnderStartBlock += 1;
+            }
+            else if (block[1] < 0 && block[1] < blocksAboveStartBlock) {
+                blocksAboveStartBlock -= 1;
+            }
+        }
+
+        return new double[] {
+                (double)(blocksLeftOfStartBlock + blocksRightOfStartBlock) / -2,
+                (double)(blocksAboveStartBlock + blocksUnderStartBlock) / -2
+        };
+    }
+
 
 }
