@@ -94,36 +94,56 @@ public class BlockCombosPanel extends JPanel {
      * @param g the Graphics object given by paintComponent()
      */
     private void drawBlockCombos(Graphics g) {
+        // draw areas for three open BlockCombos
         for (int i = 0; i < 3; i++) {
             g.drawRect(15 + i * 65, 30, 55, 55);
         }
+        // draw area for saved BlockCombo
         g.drawRect(15 + 3 * 65 + 20, 30, 55, 55);
 
-        g.drawString("Rotations: 23", 15, 20);
-
-        g.setColor(Color.BLACK);
-        g.fillRect(21, 36, 8, 8);
-        g.fillRect(21, 45, 8, 8);
-        g.fillRect(21, 54, 8, 8);
-        g.fillRect(21, 63, 8, 8);
-        g.fillRect(21, 72, 8, 8);
-
-        g.fillRect(30, 54, 8, 8);
-        g.fillRect(39, 54, 8, 8);
-        g.fillRect(48, 54, 8, 8);
-        g.fillRect(57, 54, 8, 8);
-
+        // draw open BlockCombos
         for (int i = 0; i < openBlockCombos.size(); i++) {
             BlockCombo combo = openBlockCombos.get(i);
-            //int[] initialPosition =
-            //drawSingleBlockCombo(g, );
+            int[] initialPosition = {39 + i * 65, 54};
+            drawSingleBlockCombo(g, combo, initialPosition);
         }
+
+        saveBlockCombo(BlockComboCreator.create_X_5_Combo());
+
+        // draw saved BlockCombo (if saved any)
+        if (!savedBlockCombo.isEmpty()) {
+            int[] initialPosition = {39 + 3 * 65 + 20, 54};
+            drawSingleBlockCombo(g, savedBlockCombo.get(0), initialPosition);
+        }
+
+        // draw remainingRemainingRoundsForSavedCombo
+        g.drawString(String.valueOf(remainingRoundsForSavedCombo), 255, 27);
+
+        // draw number of remaining rotations
+        g.drawString("Rotations: 23", 15, 20);
 
     }
 
+    /**
+     * Draws the given BlockCombo to this BlockCombosPanel.
+     * @param g the Graphics object given by paintComponent()
+     * @param combo the BlockCombo to be drawn
+     * @param initialPosition the position for the BlockCombo's start block
+     *                        (without offset)
+     */
     private void drawSingleBlockCombo(Graphics g, BlockCombo combo,
                                       int[] initialPosition) {
+        // calculate offset so that combo is drawn centrally
+        double[] offsetInBlocks = combo.getDrawOffset();
+        int[] offsetInPixels = {(int)(offsetInBlocks[0] * 9),
+                                (int)(offsetInBlocks[1] * 9)};
 
+        // draw all blocks of combo
+        for (int[] block : combo.getComboFormation()) {
+            g.fillRect(initialPosition[0] + block[0] * 9 + offsetInPixels[0],
+                       initialPosition[1] + block[1] * 9 + offsetInPixels[1],
+                       8, 8);
+        }
     }
 
     @Override protected void paintComponent(Graphics g) {
