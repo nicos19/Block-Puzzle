@@ -32,7 +32,7 @@ public class GameManager extends JFrame {
 
         topPanel.setBackground(Color.BLUE);
         gridPanel.setBackground(Color.YELLOW);
-        blockCombosPanel.setBackground(Color.RED);
+        //blockCombosPanel.setBackground(Color.RED);
 
 
         // set panels' sizes

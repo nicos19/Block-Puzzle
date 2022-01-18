@@ -28,6 +28,9 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
                 gameManager.repaint();
             }
         }
+        else if (e.getSource() == blockCombosPanel) {
+
+        }
     }
 
     @Override

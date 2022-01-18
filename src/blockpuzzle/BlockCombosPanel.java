@@ -2,6 +2,7 @@ package blockpuzzle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,17 +11,21 @@ import java.util.List;
  * representation of the (not yet inserted) BlockCombos in the game.
  */
 public class BlockCombosPanel extends JPanel {
-    private final List<BlockCombo> openBlockCombos = new ArrayList<>();
+    private final SingleContainer<BlockCombo>[] openBlockCombos = new SingleContainer[3];
 
-    // this list has always at most one item
-    private final List<BlockCombo> savedBlockCombo = new ArrayList<>();
+    // -1: no selection, 0/1/2: selected openBlockCombos[0/1/2], 3: selected saved combo
+    private int selectedBlockCombo = -1;
+
+    private final SingleContainer<BlockCombo> savedBlockCombo = new SingleContainer<>();
+
     // how many rounds has the player to use the saved BlockCombo
     private int remainingRoundsForSavedCombo = 3;
 
-    // this list has always at most one item
-    private final List<BlockCombo> selectedBlockCombo = new ArrayList<>();
-
     BlockCombosPanel() {
+        openBlockCombos[0] = new SingleContainer<>();
+        openBlockCombos[1] = new SingleContainer<>();
+        openBlockCombos[2] = new SingleContainer<>();
+
         // starts the game by creating the initial three BlockCombos
         generateNewBlockCombos();
 
@@ -30,10 +35,12 @@ public class BlockCombosPanel extends JPanel {
 
     /**
      * Checks if player has any available (open) BlockCombos remaining.
-     * @return true if openBlockCombos is empty, false otherwise
+     * @return true if all SingleContainers of openBlockCombos is empty,
+     * false otherwise
      */
     boolean openBlockCombosIsEmpty() {
-        return openBlockCombos.isEmpty();
+        return openBlockCombos[0].isEmpty() && openBlockCombos[1].isEmpty()
+                && openBlockCombos[2].isEmpty();
     }
 
     /**
@@ -41,52 +48,54 @@ public class BlockCombosPanel extends JPanel {
      * This is considered as the start of a new round.
      */
     void generateNewBlockCombos() {
-        openBlockCombos.add(BlockComboCreator.createRandomCombo());
-        openBlockCombos.add(BlockComboCreator.createRandomCombo());
-        openBlockCombos.add(BlockComboCreator.createRandomCombo());
+        openBlockCombos[0].store(BlockComboCreator.createRandomCombo());
+        openBlockCombos[1].store(BlockComboCreator.createRandomCombo());
+        openBlockCombos[2].store(BlockComboCreator.createRandomCombo());
 
         // ff a BlockCombo is saved, then its remaining rounds to use are reduced by one
         if (!savedBlockCombo.isEmpty()) {
             remainingRoundsForSavedCombo -= 1;
         }
+
+
+        savedBlockCombo.store(BlockComboCreator.create_X_5_Combo());
     }
 
     /**
-     * Saves the given BlockCombo by adding to savedBlockCombo.
-     * The saved BlockCombo is then removed from openBlockCombos.
+     * Saves the currently selected BlockCombo by storing in savedBlockCombo.
+     * The saved BlockCombo is then removed from openBlockCombos and deselected.
      * Does nothing if savedBlockCombo is not empty.
-     * @param combo the BlockCombo to be saved
      */
-    void saveBlockCombo(BlockCombo combo) {
+    void saveSelectedBlockCombo() {
         if (savedBlockCombo.isEmpty()) {
-            savedBlockCombo.add(combo);
-            openBlockCombos.remove(combo);
+            savedBlockCombo.store(openBlockCombos[selectedBlockCombo].getContent());
+            openBlockCombos[selectedBlockCombo].clear();
+            deselectBlockCombo();
             remainingRoundsForSavedCombo = 3;
         }
     }
 
-    /**
-     * Selects the given BlockCombo by adding to selectedBlockCombo.
-     * If selectedBlockCombo is not empty, the given BlockCombo
-     * replaces the item in selectedBlockCombo.
-     * @param combo the BlockCombo to be selected
-     */
-    void selectBlockCombo(BlockCombo combo) {
-        // remove former selected BlockCombo form list
-        if (!selectedBlockCombo.isEmpty()) {
-            selectedBlockCombo.clear();
-        }
+    void trySelect(MouseEvent e) {
+        // try selection of first open BlockCombo
+        if (new Rectangle(15, 30, 55, 55).contains(e.getPoint())) {
 
-        // add combo to list
-        selectedBlockCombo.add(combo);
+        }
     }
 
     /**
-     * Deselects the currently selected BlockCombo
-     * by clearing selectedBlockCombo.
+     * Selects the BlockCombo represented by given index.
+     * @param index 0/1/2 represents the BlockCombos in openBlockCombos[0/1/2],
+     *              3 represents the BlockCombo in savedBlockCombo
+     */
+    void selectBlockCombo(int index) {
+        selectedBlockCombo = index;
+    }
+
+    /**
+     * Deselects the currently selected BlockCombo.
      */
     void deselectBlockCombo() {
-        selectedBlockCombo.clear();
+        selectedBlockCombo = -1;
     }
 
     /**
@@ -102,18 +111,18 @@ public class BlockCombosPanel extends JPanel {
         g.drawRect(15 + 3 * 65 + 20, 30, 55, 55);
 
         // draw open BlockCombos
-        for (int i = 0; i < openBlockCombos.size(); i++) {
-            BlockCombo combo = openBlockCombos.get(i);
-            int[] initialPosition = {39 + i * 65, 54};
-            drawSingleBlockCombo(g, combo, initialPosition);
+        for (int i = 0; i < openBlockCombos.length; i++) {
+            if (!openBlockCombos[i].isEmpty()) {
+                BlockCombo combo = openBlockCombos[i].getContent();
+                int[] initialPosition = {39 + i * 65, 54};
+                drawSingleBlockCombo(g, combo, initialPosition);
+            }
         }
-
-        saveBlockCombo(BlockComboCreator.create_X_5_Combo());
 
         // draw saved BlockCombo (if saved any)
         if (!savedBlockCombo.isEmpty()) {
             int[] initialPosition = {39 + 3 * 65 + 20, 54};
-            drawSingleBlockCombo(g, savedBlockCombo.get(0), initialPosition);
+            drawSingleBlockCombo(g, savedBlockCombo.getContent(), initialPosition);
         }
 
         // draw remainingRemainingRoundsForSavedCombo
