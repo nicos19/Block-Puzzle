@@ -21,6 +21,15 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            // player clicked RMT -> rotate currently selected BlockCombo
+            if (blockCombosPanel.isAnyBlockComboSelected()) {
+                blockCombosPanel.getSelectedBlockCombo().rotate();
+                gameManager.repaint();
+            }
+            return;
+        }
+
         if (e.getSource() == gridPanel) {
             if (gridPanel.isMouseOverGrid(e.getPoint())) {
                 GridCell clickedCell = gridPanel.getCellUnderMouse(e.getPoint());
@@ -29,7 +38,10 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
             }
         }
         else if (e.getSource() == blockCombosPanel) {
-
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                blockCombosPanel.trySelect(e);
+                gameManager.repaint();
+            }
         }
     }
 

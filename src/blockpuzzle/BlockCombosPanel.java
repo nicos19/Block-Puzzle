@@ -62,6 +62,34 @@ public class BlockCombosPanel extends JPanel {
     }
 
     /**
+     * Checks if any BlockCombo is currently selected.
+     * @return true if any BlockCombo is selected, false otherwise
+     */
+    boolean isAnyBlockComboSelected() {
+        return selectedBlockCombo != -1;
+    }
+
+    /**
+     * Gets the currently selected BlockCombo.
+     * Throws IllegalStateException if no BlockCombo is selected.
+     * @return the selected BlockCombo
+     */
+    BlockCombo getSelectedBlockCombo() {
+        if (selectedBlockCombo >= 0 && selectedBlockCombo < 3) {
+            // some open BlockCombo selected
+            return openBlockCombos[selectedBlockCombo].getContent();
+        }
+        else if (selectedBlockCombo == 3) {
+            // saved BlockCombo selected
+            return savedBlockCombo.getContent();
+        }
+        else {
+            throw new IllegalStateException("getSelectedBlockCombo() should only " +
+                    "be called if any BlockCombo is selected.");
+        }
+    }
+
+    /**
      * Saves the currently selected BlockCombo by storing in savedBlockCombo.
      * The saved BlockCombo is then removed from openBlockCombos and deselected.
      * Does nothing if savedBlockCombo is not empty.
@@ -75,10 +103,32 @@ public class BlockCombosPanel extends JPanel {
         }
     }
 
+    /**
+     * Selects a BlockCombo in openBlockCombos if
+     * player clicked on any painted BlockCombo.
+     * @param e the MouseEvent invoked by player's click
+     */
     void trySelect(MouseEvent e) {
-        // try selection of first open BlockCombo
-        if (new Rectangle(15, 30, 55, 55).contains(e.getPoint())) {
+        // check if player tries to select an open BlockCombo
+        for (int i = 0; i < openBlockCombos.length; i++) {
+            Rectangle selectionArea = new Rectangle(
+                    15 + i * 65, 30, 55, 55);
+            if (selectionArea.contains(e.getPoint())) {
+                // player tries to select BlockCombo in openBlockCombos[i]
+                if (!openBlockCombos[i].isEmpty()) {
+                    selectBlockCombo(i);
+                }
+            }
+        }
 
+        // check if player tries to select a saved BlockCombo
+        Rectangle selectionArea = new Rectangle(
+                15 + 3 * 65 + 20, 30, 55, 55);
+        if (selectionArea.contains(e.getPoint())) {
+            // player tries to select BlockCombo in savedBlockCombo
+            if (!savedBlockCombo.isEmpty()) {
+                selectBlockCombo(3);
+            }
         }
     }
 
@@ -130,7 +180,14 @@ public class BlockCombosPanel extends JPanel {
 
         // draw number of remaining rotations
         g.drawString("Rotations: 23", 15, 20);
+        if (isAnyBlockComboSelected() && getSelectedBlockCombo().isRotated()) {
+            g.setColor(Color.RED);
+            g.drawString("-1", 100, 20);
+            g.setColor(Color.BLACK);
+        }
 
+        // draw selection
+        drawSelection(g);
     }
 
     /**
@@ -153,6 +210,31 @@ public class BlockCombosPanel extends JPanel {
                        initialPosition[1] + block[1] * 9 + offsetInPixels[1],
                        8, 8);
         }
+    }
+
+    /**
+     * Highlights the screen area of the selected BlockCombo if any is selected.
+     * @param g the Graphics object given by paintComponent()
+     */
+    private void drawSelection(Graphics g) {
+        g.setColor(Color.GREEN);
+
+        switch(selectedBlockCombo) {
+            case -1:
+                // no selection
+                break;
+            case 3:
+                // saved BlockCombo selected
+                g.drawRect(15 + 3 * 65 + 20, 30, 55, 55);
+                g.drawRect(14 + 3 * 65 + 20, 29, 57, 57);
+                break;
+            default:
+                // some open BlockCombo selected
+                g.drawRect(15 + selectedBlockCombo * 65, 30, 55, 55);
+                g.drawRect(14 + selectedBlockCombo * 65, 29, 57, 57);
+        }
+
+        g.setColor(Color.BLACK);
     }
 
     @Override protected void paintComponent(Graphics g) {

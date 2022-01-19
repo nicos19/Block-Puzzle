@@ -120,6 +120,14 @@ public class BlockCombo {
     }
 
     /**
+     * Checks if this BlockCombo is rotated or in its original orientation.
+     * @return true if rotation != 0, false otherwise
+     */
+    boolean isRotated() {
+        return rotation != 0;
+    }
+
+    /**
      * Rotates the BlockCombo 90° to the right.
      */
     void rotate() {
