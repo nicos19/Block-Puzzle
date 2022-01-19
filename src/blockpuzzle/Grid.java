@@ -7,7 +7,7 @@ import java.util.List;
  * A Grid is a play field for the game consisting of GridCells.
  */
 public class Grid {
-    private GameManager gameManager;
+    private final GameManager gameManager;
     private final int size = 9;
     private final GridCell[][] cells;
 
@@ -127,9 +127,6 @@ public class Grid {
             // fill target cell
             targetCell.fill();
         }
-
-        // GameManager starts next round if necessary
-        gameManager.tryNextRound();
     }
 
     /**
@@ -166,9 +163,8 @@ public class Grid {
      * @param posY y-coordinate of the questioned position
      * @return true if the position is outside the Grid, false otherwise
      */
-    private boolean positionOutOfBounds(int posX, int posY) {
+    boolean positionOutOfBounds(int posX, int posY) {
         return posX < 0 || posX >= size || posY < 0 || posY >= size;
     }
-
 
 }

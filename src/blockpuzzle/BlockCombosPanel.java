@@ -3,34 +3,33 @@ package blockpuzzle;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A BlockCombosPanel is an extended JPanel that contains the logical and visual
  * representation of the (not yet inserted) BlockCombos in the game.
  */
 public class BlockCombosPanel extends JPanel {
+    private final GameManager gameManager;
+
     private final SingleContainer<BlockCombo>[] openBlockCombos = new SingleContainer[3];
+    private final SingleContainer<BlockCombo> savedBlockCombo = new SingleContainer<>();
 
     // -1: no selection, 0/1/2: selected openBlockCombos[0/1/2], 3: selected saved combo
     private int selectedBlockCombo = -1;
 
-    private final SingleContainer<BlockCombo> savedBlockCombo = new SingleContainer<>();
-
     // how many rounds has the player to use the saved BlockCombo
     private int remainingRoundsForSavedCombo = 3;
 
-    BlockCombosPanel() {
+
+    BlockCombosPanel(GameManager gameM) {
+        gameManager = gameM;
+
         openBlockCombos[0] = new SingleContainer<>();
         openBlockCombos[1] = new SingleContainer<>();
         openBlockCombos[2] = new SingleContainer<>();
 
         // starts the game by creating the initial three BlockCombos
         generateNewBlockCombos();
-
-        // add MouseInteractionManager
-
     }
 
     /**
@@ -52,13 +51,10 @@ public class BlockCombosPanel extends JPanel {
         openBlockCombos[1].store(BlockComboCreator.createRandomCombo());
         openBlockCombos[2].store(BlockComboCreator.createRandomCombo());
 
-        // ff a BlockCombo is saved, then its remaining rounds to use are reduced by one
+        // if a BlockCombo is saved, then its remaining rounds to use are reduced by one
         if (!savedBlockCombo.isEmpty()) {
             remainingRoundsForSavedCombo -= 1;
         }
-
-
-        savedBlockCombo.store(BlockComboCreator.create_X_5_Combo());
     }
 
     /**
@@ -104,6 +100,28 @@ public class BlockCombosPanel extends JPanel {
     }
 
     /**
+     * Removes the given BlockCombo from openBlockCombos or savedBlockCombo,
+     * depending on given index.
+     * Lets GameManager start next round if player used all available BlockCombos.
+     * Throws IllegalArgumentException if no BlockCombo is selected.
+     */
+    void consumeSelectedBlockCombo() {
+        if (selectedBlockCombo >= 0 && selectedBlockCombo < 3) {
+            openBlockCombos[selectedBlockCombo].clear();
+        }
+        else if (selectedBlockCombo == 3) {
+            savedBlockCombo.clear();
+        }
+        else {
+            throw new IllegalArgumentException("consumeSelectedBlockCombo() should " +
+                    "not be called if no BlockCombo is selected.");
+        }
+
+        // GameManager starts next round if necessary
+        gameManager.tryNextRound();
+    }
+
+    /**
      * Selects a BlockCombo in openBlockCombos if
      * player clicked on any painted BlockCombo.
      * @param e the MouseEvent invoked by player's click
@@ -134,10 +152,16 @@ public class BlockCombosPanel extends JPanel {
 
     /**
      * Selects the BlockCombo represented by given index.
+     * Former selected BlockCombo resets its rotation.
      * @param index 0/1/2 represents the BlockCombos in openBlockCombos[0/1/2],
      *              3 represents the BlockCombo in savedBlockCombo
      */
     void selectBlockCombo(int index) {
+        if (selectedBlockCombo != -1) {
+            // reset rotation of old selected BlockCombo
+            getSelectedBlockCombo().resetRotation();
+        }
+
         selectedBlockCombo = index;
     }
 
@@ -179,7 +203,7 @@ public class BlockCombosPanel extends JPanel {
         g.drawString(String.valueOf(remainingRoundsForSavedCombo), 255, 27);
 
         // draw number of remaining rotations
-        g.drawString("Rotations: 23", 15, 20);
+        g.drawString("Rotations: " + gameManager.getRotations(), 15, 20);
         if (isAnyBlockComboSelected() && getSelectedBlockCombo().isRotated()) {
             g.setColor(Color.RED);
             g.drawString("-1", 100, 20);

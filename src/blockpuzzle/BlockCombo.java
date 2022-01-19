@@ -15,7 +15,7 @@ public class BlockCombo {
      * each comboFormation has a start block, this start block is
      * represented by the entry [i_x, i_y] = [0, 0]
      */
-    private List<int[]> comboFormation;
+    private final List<int[]> comboFormation;
     private int rotation = 0;
 
     BlockCombo(List<int[]> formation) {
@@ -85,8 +85,8 @@ public class BlockCombo {
     }
 
     /**
-     * Checks if this BlockCombo can be rotated. Non-rotatable
-     * BlockCombos would not change by executing a rotation.
+     * Checks if this BlockCombo can be rotated. Non-rotatable BlockCombos
+     * would not change its appearance by executing a rotation.
      * @return true if BlockCombo can be rotated
      */
     boolean isRotatable() {
@@ -125,6 +125,19 @@ public class BlockCombo {
      */
     boolean isRotated() {
         return rotation != 0;
+    }
+
+    /**
+     * Rotates this BlockCombo 90° to the right if it is rotatable.
+     * Does nothing otherwise.
+     * @return true if BlockCombo gets rotated, false otherwise
+     */
+    boolean tryRotate() {
+        if (isRotatable()) {
+            rotate();
+            return true;
+        }
+        return false;
     }
 
     /**

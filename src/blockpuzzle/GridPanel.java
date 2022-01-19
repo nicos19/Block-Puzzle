@@ -2,13 +2,17 @@ package blockpuzzle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A GridPanel is an extended JPanel that contains
  * the logical and visual representation of a Grid.
  */
 public class GridPanel extends JPanel {
-    private Grid grid;
+    private final Grid grid;
+    private final Map<GridCell, Color> highlightedCells = new HashMap<>();
 
     // x-coordinate of the grid's upper left corner (in pixels)
     private final int posX = 11;
@@ -24,9 +28,14 @@ public class GridPanel extends JPanel {
         gridArea = new Rectangle(posX, posY,
                                 grid.getSize() * cellSize,
                                 grid.getSize() * cellSize);
+    }
 
-        // add MouseInteractionManager
-
+    /**
+     * Gets the grid of this GridPanel.
+     * @return the grid.
+     */
+    Grid getGrid() {
+        return grid;
     }
 
     /**
@@ -50,6 +59,38 @@ public class GridPanel extends JPanel {
         return grid.getCellAt(cellX, cellY);
     }
 
+    /**
+     * Calculates all GridCells that shall be highlighted and remembers them in
+     * highlightedCells.
+     * A GridCell shall be highlighted if and only if it would be filled if
+     * given BlockCombo is inserted in given targetCell.
+     * @param combo the BlockCombo that triggers the highlighting
+     * @param targetCell the GridCell corresponding with combo's start block
+     */
+    void calculateHighlightedCells(BlockCombo combo, GridCell targetCell, Color color) {
+        highlightedCells.clear();
+
+        for (int[] block : combo.getComboFormation()) {
+            // get position that shall be highlighted
+            int[] highlightedPosition = {targetCell.getPosX() + block[0],
+                                         targetCell.getPosY() + block[1]};
+            // check if highlightedPosition is inside the grid
+            if (!grid.positionOutOfBounds(highlightedPosition[0],
+                                          highlightedPosition[1])) {
+                // remember the GridCell corresponding to highlightedPosition
+                highlightedCells.put(grid.getCellAt(highlightedPosition[0],
+                                                    highlightedPosition[1]),
+                                     color);
+            }
+        }
+    }
+
+    /**
+     * Clears the list of highlightedCells.
+     */
+    void clearHighlightedCells() {
+        highlightedCells.clear();
+    }
 
     /**
      * Draws the grid and its content (i.e. its inserted blocks).
@@ -68,7 +109,7 @@ public class GridPanel extends JPanel {
         }
 
         // fill grid where cells are non-empty
-        g.setColor(Color.GREEN);
+        g.setColor(Color.DARK_GRAY);
         for (int x = 0; x < grid.getSize(); x++) {
             for (int y = 0; y < grid.getSize(); y++) {
                 if (!grid.getCells()[y][x].isEmpty()) {
@@ -77,6 +118,19 @@ public class GridPanel extends JPanel {
             }
         }
 
+        // highlight cells
+        for (GridCell cell : highlightedCells.keySet()) {
+            if (cell.isEmpty()) {
+                g.setColor(highlightedCells.get(cell));
+                colorCell(g, cell);
+            }
+            else {
+                g.setColor(highlightedCells.get(cell).darker().darker());
+                colorCell(g, cell);
+            }
+        }
+
+        g.setColor(Color.BLACK);
     }
 
     /**

@@ -2,7 +2,6 @@ package blockpuzzle;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 /**
  * A GameManager is an extended JFrame responsible for managing and visualizing the game.
@@ -10,9 +9,12 @@ import java.util.List;
 public class GameManager extends JFrame {
     private final JPanel topPanel = new JPanel();
     private final GridPanel gridPanel = new GridPanel(this);
-    private final BlockCombosPanel blockCombosPanel = new BlockCombosPanel();
+    private final BlockCombosPanel blockCombosPanel = new BlockCombosPanel(this);
     private final MouseInteractionManager mouseInteractionManager
             = new MouseInteractionManager(this, gridPanel, blockCombosPanel);
+
+    // how many BlockCombos can the player rotate
+    private int rotations = 3;
 
     GameManager() {
         // set layout
@@ -23,15 +25,15 @@ public class GameManager extends JFrame {
         add(gridPanel);
         add(blockCombosPanel);
 
-        // add MouseInteractionListener to panels
+        // add MouseInteractionManagers to panels
         gridPanel.addMouseListener(mouseInteractionManager);
         gridPanel.addMouseMotionListener(mouseInteractionManager);
         blockCombosPanel.addMouseListener(mouseInteractionManager);
         blockCombosPanel.addMouseMotionListener(mouseInteractionManager);
 
-
+        // set panel background colors
         topPanel.setBackground(Color.BLUE);
-        gridPanel.setBackground(Color.YELLOW);
+        //gridPanel.setBackground(Color.YELLOW);
         //blockCombosPanel.setBackground(Color.RED);
 
 
@@ -55,8 +57,37 @@ public class GameManager extends JFrame {
      */
     void tryNextRound() {
         if (blockCombosPanel.openBlockCombosIsEmpty()) {
+            // start next round
             blockCombosPanel.generateNewBlockCombos();
+            repaint();
         }
+    }
+
+    /**
+     * Gets the number of rotations.
+     * @return the rotations
+     */
+    int getRotations() {
+        return rotations;
+    }
+
+    /**
+     * Increases the number of available rotations by one.
+     */
+    void addRotation() {
+        rotations += 1;
+    }
+
+    /**
+     * Decreases the number of available rotations by one.
+     * Throws IllegalStateException if no rotations are available.
+     */
+    void consumeRotation() {
+        if (rotations == 0) {
+            throw new IllegalStateException(
+                    "useRotation() should not be called if rotations == 0.");
+        }
+        rotations -= 1;
     }
 
 

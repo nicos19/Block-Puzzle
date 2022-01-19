@@ -3,6 +3,7 @@ package blockpuzzle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.Color;
 
 /**
  * A MouseInteractionManager is responsible for detecting mouse clicks and movements.
@@ -21,22 +22,43 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        // check if player clicked RMT to rotate selected BlockCombo
         if (e.getButton() == MouseEvent.BUTTON3) {
-            // player clicked RMT -> rotate currently selected BlockCombo
-            if (blockCombosPanel.isAnyBlockComboSelected()) {
-                blockCombosPanel.getSelectedBlockCombo().rotate();
+            if (blockCombosPanel.isAnyBlockComboSelected()
+                    && gameManager.getRotations() > 0) {
+                // rotate selected BlockCombo (if it is rotatable)
+                boolean rotate = blockCombosPanel.getSelectedBlockCombo().tryRotate();
+                if (rotate) {
+                    mouseMoved(e);  // this updates highlighted grid cells if necessary
+                }
                 gameManager.repaint();
             }
             return;
         }
 
-        if (e.getSource() == gridPanel) {
-            if (gridPanel.isMouseOverGrid(e.getPoint())) {
-                GridCell clickedCell = gridPanel.getCellUnderMouse(e.getPoint());
-                clickedCell.fill();
-                gameManager.repaint();
+        // check if player inserts selected BlockCombo
+        if (e.getSource() == gridPanel && gridPanel.isMouseOverGrid(e.getPoint())) {
+            GridCell clickedCell = gridPanel.getCellUnderMouse(e.getPoint());
+            if (blockCombosPanel.isAnyBlockComboSelected()
+                    && gridPanel.getGrid().canInsertBlockCombo(
+                    clickedCell, blockCombosPanel.getSelectedBlockCombo())) {
+                BlockCombo selectedCombo = blockCombosPanel.getSelectedBlockCombo();
+                // insert selected BlockCombo in Grid
+                gridPanel.getGrid().insertBlockCombo(clickedCell, selectedCombo);
+                // remove selected BlockCombo from openBlockCombos/savedBlockCombo
+                blockCombosPanel.consumeSelectedBlockCombo();
+                // deselect the selected BlockCombo
+                blockCombosPanel.deselectBlockCombo();
+                // remove highlighting
+                gridPanel.clearHighlightedCells();
+                // consume one rotation if BlockCombo was rotated
+                if (selectedCombo.isRotated()) {
+                    gameManager.consumeRotation();
+                }
             }
+            gameManager.repaint();
         }
+        // check if player selects any BlockCombo
         else if (e.getSource() == blockCombosPanel) {
             if (e.getButton() == MouseEvent.BUTTON1) {
                 blockCombosPanel.trySelect(e);
@@ -72,6 +94,33 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        // check if player is hovering over the grid
+        if (e.getSource() == gridPanel && gridPanel.isMouseOverGrid(e.getPoint())
+                && blockCombosPanel.isAnyBlockComboSelected()) {
+            GridCell targetCell = gridPanel.getCellUnderMouse(e.getPoint());
+            BlockCombo selectedCombo = blockCombosPanel.getSelectedBlockCombo();
 
+            // grid cells that would be covered by selected
+            // BlockCombo shall be highlighted
+            if (gridPanel.getGrid().canInsertBlockCombo(targetCell, selectedCombo)) {
+                // insert possible: highlight green
+                gridPanel.calculateHighlightedCells(selectedCombo, targetCell,
+                                                    new Color(153, 255, 153));
+            }
+            else {
+                //insert not possible: highlight red
+                gridPanel.calculateHighlightedCells(selectedCombo, targetCell,
+                                                    new Color(255, 153, 153));
+            }
+
+            gameManager.repaint();
+        }
+        else if (e.getSource() == gridPanel) {
+            // mouse is not over grid or no BlockCombo is selected
+            // -> do not highlight any grid cells
+            gridPanel.clearHighlightedCells();
+            gameManager.repaint();
+        }
     }
+
 }
