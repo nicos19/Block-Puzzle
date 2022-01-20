@@ -32,9 +32,10 @@ public class GameManager extends JFrame {
         blockCombosPanel.addMouseMotionListener(mouseInteractionManager);
 
         // set panel background colors
-        topPanel.setBackground(Color.BLUE);
-        //gridPanel.setBackground(Color.YELLOW);
-        //blockCombosPanel.setBackground(Color.RED);
+        Color backgroundColor = new Color(20, 20, 20);
+        topPanel.setBackground(backgroundColor);
+        gridPanel.setBackground(backgroundColor);
+        blockCombosPanel.setBackground(backgroundColor);
 
 
         // set panels' sizes
@@ -56,7 +57,8 @@ public class GameManager extends JFrame {
      * Next round results in three new BlockCombos becoming available.
      */
     void tryNextRound() {
-        if (blockCombosPanel.openBlockCombosIsEmpty()) {
+        if (blockCombosPanel.openBlockCombosIsEmpty()
+                && !blockCombosPanel.hasUrgentSavedCombo()) {
             // start next round
             blockCombosPanel.generateNewBlockCombos();
             repaint();

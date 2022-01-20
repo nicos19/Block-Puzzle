@@ -3,6 +3,7 @@ package blockpuzzle;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 /**
  * A BlockCombosPanel is an extended JPanel that contains the logical and visual
@@ -14,11 +15,16 @@ public class BlockCombosPanel extends JPanel {
     private final SingleContainer<BlockCombo>[] openBlockCombos = new SingleContainer[3];
     private final SingleContainer<BlockCombo> savedBlockCombo = new SingleContainer<>();
 
+    // -1: no highlighting, 0/1/2: highlight openBlockCombos[0/1/2],
+    // 3: highlight saved combo, 4: highlight empty area for saved combos
+    private int highlightedComboArea = -1;
+
     // -1: no selection, 0/1/2: selected openBlockCombos[0/1/2], 3: selected saved combo
     private int selectedBlockCombo = -1;
 
     // how many rounds has the player to use the saved BlockCombo
-    private int remainingRoundsForSavedCombo = 3;
+    private final int maximumRemainingRoundsForSavedCombo = 4;
+    private int remainingRoundsForSavedCombo = maximumRemainingRoundsForSavedCombo;
 
 
     BlockCombosPanel(GameManager gameM) {
@@ -86,8 +92,17 @@ public class BlockCombosPanel extends JPanel {
     }
 
     /**
+     * Checks if player saved previously a BlockCombo which must be used in this round.
+     * @return true if there is a saved BlockCombo with 0 remaining rounds to use
+     */
+    boolean hasUrgentSavedCombo() {
+        return !savedBlockCombo.isEmpty() && remainingRoundsForSavedCombo == 0;
+    }
+
+    /**
      * Saves the currently selected BlockCombo by storing in savedBlockCombo.
      * The saved BlockCombo is then removed from openBlockCombos and deselected.
+     * Lets GameManager start next round if openBlockCombos is empty after saving.
      * Does nothing if savedBlockCombo is not empty.
      */
     void saveSelectedBlockCombo() {
@@ -95,7 +110,11 @@ public class BlockCombosPanel extends JPanel {
             savedBlockCombo.store(openBlockCombos[selectedBlockCombo].getContent());
             openBlockCombos[selectedBlockCombo].clear();
             deselectBlockCombo();
-            remainingRoundsForSavedCombo = 3;
+            remainingRoundsForSavedCombo = maximumRemainingRoundsForSavedCombo;
+            highlightedComboArea = 3;
+
+            // GameManager starts next round if necessary
+            gameManager.tryNextRound();
         }
     }
 
@@ -151,6 +170,58 @@ public class BlockCombosPanel extends JPanel {
     }
 
     /**
+     * Highlights an area of an open or saved BlockCombo if player is hovering over one.
+     * @param e the MouseEvent invoked by player's click
+     */
+    void highlightBlockComboAreas(MouseEvent e) {
+        highlightedComboArea = -1;
+
+        // check if player hovers over open BlockCombos
+        for (int i = 0; i < openBlockCombos.length; i++) {
+            Rectangle selectionArea = new Rectangle(
+                    15 + i * 65, 30, 55, 55);
+            if (selectionArea.contains(e.getPoint())) {
+                // player hovers over BlockCombo in openBlockCombos[i]
+                if (!openBlockCombos[i].isEmpty() && selectedBlockCombo != i) {
+                    highlightedComboArea = i;
+                }
+            }
+        }
+
+        // check if player hovers over saved BlockCombo
+        Rectangle selectionArea = new Rectangle(
+                15 + 3 * 65 + 20, 30, 55, 55);
+        if (selectionArea.contains(e.getPoint())) {
+            if (!savedBlockCombo.isEmpty() && selectedBlockCombo != 3) {
+                // player hovers over BlockCombo in savedBlockCombo
+                highlightedComboArea = 3;
+            }
+            else if (savedBlockCombo.isEmpty() && isAnyBlockComboSelected()) {
+                // player hovers over empty savedBlockCombo area
+                highlightedComboArea = 4;
+            }
+        }
+    }
+
+    /**
+     * Saves the currently selected BlockCombo if player clicked on screen
+     * area for saved BlockCombos and no BlockCombo is saved yet.
+     * @param e the MouseEvent invoked by player's click
+     */
+    void trySave(MouseEvent e) {
+        Rectangle selectionArea = new Rectangle(
+                15 + 3 * 65 + 20, 30, 55, 55);
+        if (selectionArea.contains(e.getPoint())) {
+            // player clicked in savedBlockCombo area
+            if (savedBlockCombo.isEmpty() && selectedBlockCombo >= 0) {
+                // some BlockCombo is selected and no BlockCombo is currently saved
+                // player wants to save the selected BlockCombo
+                saveSelectedBlockCombo();
+            }
+        }
+    }
+
+    /**
      * Selects the BlockCombo represented by given index.
      * Former selected BlockCombo resets its rotation.
      * @param index 0/1/2 represents the BlockCombos in openBlockCombos[0/1/2],
@@ -163,6 +234,7 @@ public class BlockCombosPanel extends JPanel {
         }
 
         selectedBlockCombo = index;
+        highlightedComboArea = -1;
     }
 
     /**
@@ -177,12 +249,19 @@ public class BlockCombosPanel extends JPanel {
      * @param g the Graphics object given by paintComponent()
      */
     private void drawBlockCombos(Graphics g) {
+        Color standardColor = Color.GRAY;
+        g.setColor(standardColor);
+
         // draw areas for three open BlockCombos
         for (int i = 0; i < 3; i++) {
             g.drawRect(15 + i * 65, 30, 55, 55);
         }
         // draw area for saved BlockCombo
         g.drawRect(15 + 3 * 65 + 20, 30, 55, 55);
+
+        // draw highlighting for these four areas
+        drawComboAreaHighlighting(g);
+        g.setColor(standardColor);
 
         // draw open BlockCombos
         for (int i = 0; i < openBlockCombos.length; i++) {
@@ -197,17 +276,31 @@ public class BlockCombosPanel extends JPanel {
         if (!savedBlockCombo.isEmpty()) {
             int[] initialPosition = {39 + 3 * 65 + 20, 54};
             drawSingleBlockCombo(g, savedBlockCombo.getContent(), initialPosition);
+            // highlight area for saved BlockCombo if remainingRounds == 0
+            if (remainingRoundsForSavedCombo == 0) {
+                g.setColor(Color.RED);
+                g.drawRect(15 + 3 * 65 + 20, 30, 55, 55);
+                g.setColor(standardColor);
+            }
         }
 
-        // draw remainingRemainingRoundsForSavedCombo
-        g.drawString(String.valueOf(remainingRoundsForSavedCombo), 255, 27);
+        // draw remainingRemainingRoundsForSavedCombo (if any combo saved)
+        if (!savedBlockCombo.isEmpty()) {
+            if (remainingRoundsForSavedCombo != maximumRemainingRoundsForSavedCombo)  {
+                if (remainingRoundsForSavedCombo == 0) {
+                    g.setColor(Color.RED);
+                }
+                g.drawString(String.valueOf(remainingRoundsForSavedCombo), 255, 26);
+                g.setColor(standardColor);
+            }
+        }
 
         // draw number of remaining rotations
         g.drawString("Rotations: " + gameManager.getRotations(), 15, 20);
         if (isAnyBlockComboSelected() && getSelectedBlockCombo().isRotated()) {
             g.setColor(Color.RED);
             g.drawString("-1", 100, 20);
-            g.setColor(Color.BLACK);
+            g.setColor(standardColor);
         }
 
         // draw selection
@@ -257,8 +350,38 @@ public class BlockCombosPanel extends JPanel {
                 g.drawRect(15 + selectedBlockCombo * 65, 30, 55, 55);
                 g.drawRect(14 + selectedBlockCombo * 65, 29, 57, 57);
         }
+    }
 
-        g.setColor(Color.BLACK);
+    /**
+     * Highlights the screen area of either one of the open BlockCombos or of the
+     * saved BlockCombo. This Highlighting marks that the highlighted BlockCombo
+     * can be selected or (for empty area of saved BlockCombo) that the currently
+     * selected BlockCombo can be saved.
+     * @param g the Graphics object given by paintComponent()
+     */
+    private void drawComboAreaHighlighting(Graphics g) {
+        g.setColor(g.getColor().darker().darker().darker());
+
+        switch(highlightedComboArea) {
+            case -1:
+                // no highlighting
+                break;
+            case 3:
+                // saved BlockCombo is highlighted
+                g.fillRect(16 + 3 * 65 + 20, 31, 54, 54);
+                break;
+            case 4:
+                // empty area for saved BlockCombos is highlighted
+                g.fillRect(16 + 3 * 65 + 20, 31, 54, 54);
+                g.setColor(g.getColor().brighter().brighter().brighter());
+                g.drawString("Save", 15 + 3 * 65 + 20 + 15, 61);
+                break;
+            default:
+                // one of the open BlockCombos is highlighted
+                g.fillRect(16 + highlightedComboArea * 65, 31,
+                           54, 54);
+                break;
+        }
     }
 
     @Override protected void paintComponent(Graphics g) {

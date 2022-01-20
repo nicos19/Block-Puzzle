@@ -98,6 +98,7 @@ public class GridPanel extends JPanel {
      */
     private void drawGrid(Graphics g) {
         // draw empty grid
+        g.setColor(Color.BLACK);
         g.drawRect(posX - 1, posY - 1,
                    (cellSize - 1) * grid.getSize() + grid.getSize() + 1,
                    (cellSize - 1) * grid.getSize() + grid.getSize() + 1);
@@ -109,11 +110,17 @@ public class GridPanel extends JPanel {
         }
 
         // fill grid where cells are non-empty
-        g.setColor(Color.DARK_GRAY);
+        g.setColor(Color.GRAY);
         for (int x = 0; x < grid.getSize(); x++) {
             for (int y = 0; y < grid.getSize(); y++) {
                 if (!grid.getCells()[y][x].isEmpty()) {
                     colorCell(g, grid.getCells()[y][x]);
+                }
+                else {
+                    // paint empty cells white
+                    g.setColor(new Color(230, 230, 230));
+                    colorCell(g, grid.getCells()[y][x]);
+                    g.setColor(Color.GRAY);
                 }
             }
         }

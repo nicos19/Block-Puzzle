@@ -58,12 +58,12 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
             }
             gameManager.repaint();
         }
-        // check if player selects any BlockCombo
-        else if (e.getSource() == blockCombosPanel) {
-            if (e.getButton() == MouseEvent.BUTTON1) {
-                blockCombosPanel.trySelect(e);
-                gameManager.repaint();
-            }
+        // check if player selects or saves any BlockCombo
+        else if (e.getSource() == blockCombosPanel
+                && e.getButton() == MouseEvent.BUTTON1) {
+            blockCombosPanel.trySelect(e);
+            blockCombosPanel.trySave(e);
+            gameManager.repaint();
         }
     }
 
@@ -121,6 +121,12 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
             gridPanel.clearHighlightedCells();
             gameManager.repaint();
         }
+        // check if player is hovering over any open or saved BlockCombo
+        else if (e.getSource() == blockCombosPanel) {
+            blockCombosPanel.highlightBlockComboAreas(e);
+            gameManager.repaint();
+        }
+
     }
 
 }
