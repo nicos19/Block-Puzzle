@@ -39,7 +39,6 @@ public class GameManager extends JFrame {
         gridPanel.setBackground(backgroundColor);
         blockCombosPanel.setBackground(backgroundColor);
 
-
         // set panels' sizes
         topPanel.setPreferredSize(new Dimension(300, 50));
         topPanel.setMaximumSize(new Dimension(300, 50));
@@ -67,8 +66,38 @@ public class GameManager extends JFrame {
         }
     }
 
+    /**
+     * Checks if the game is over, i.e. if the player has BlockCombos available that must
+     * be used before the next round starts and no such BlockCombo can be inserted.
+     * @return true if the game is over, false otherwise
+     */
     boolean isGameOver() {
-        return false;
+        List<BlockCombo> mustUseBlockCombos = blockCombosPanel.getMustUseBlockCombos();
+        if (mustUseBlockCombos.isEmpty()) {
+            // player has no BlockCombos that must be used this round
+            // GameManager starts next round
+            return false;
+        }
+
+        for (BlockCombo combo : mustUseBlockCombos) {
+            // check if combo can be inserted into Grid
+            if (gridPanel.getGrid().canInsertBlockCombo(combo)) {
+                return false;
+            }
+
+            // if rotations available: check if rotated combo can be inserted into Grid
+            if (rotations > 0) {
+                for (int i = 0; i < 3; i++) {
+                    combo.rotate();
+                    if (gridPanel.getGrid().canInsertBlockCombo(combo)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // no BlockCombo insertable -> Game Over
+        return true;
     }
 
     /**

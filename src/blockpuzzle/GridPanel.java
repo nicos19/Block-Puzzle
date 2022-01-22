@@ -169,10 +169,8 @@ public class GridPanel extends JPanel {
             }
         }
 
-        g.setColor(Color.BLACK);
-
-        // activates the effect for recently cleared cells if necessary
-        //gameManager.tryClearedCellsEffect();
+        // if game is over, draw "GAME OVER" writing
+        drawGameOverWriting(g);
     }
 
     /**
@@ -185,6 +183,22 @@ public class GridPanel extends JPanel {
                    posY + 1 + cell.getPosY() * cellSize,
                    cellSize - 2,
                    cellSize - 2);
+    }
+
+    /**
+     * Draws a "GAME OVER" writing.
+     * @param g the Graphics object given by paintComponent() / drawGrid()
+     */
+    private void drawGameOverWriting(Graphics g) {
+        g.setColor(new Color(255, 255, 255, 170));
+        g.fillRect(posX - 1, posY - 1,
+                (cellSize - 1) * grid.getSize() + grid.getSize() + 2,
+                (cellSize - 1) * grid.getSize() + grid.getSize() + 2);
+        g.setColor(new Color(20, 20, 20));
+
+        g.setFont(new Font("Monospaced", Font.BOLD, 105));
+        g.drawString("GAME", posX + 13, posY + 124);
+        g.drawString("OVER", posX + 13, posY + 217);
     }
 
     @Override protected void paintComponent(Graphics g) {

@@ -15,10 +15,20 @@ import java.util.Random;
 public class BlockComboCreator {
 
     /**
-     * Creates randomly a BlockCombo using the create_..._Combo() methods of this class.
+     * Creates randomly a BlockCombo that can be randomly rotated.
      * @return the created BlockCombo
      */
     static BlockCombo createRandomCombo() {
+        BlockCombo combo = createNonRotatedRandomCombo();
+        combo.rotateRandomly();
+        return combo;
+    }
+
+    /**
+     * Creates randomly a BlockCombo using the create_..._Combo() methods of this class.
+     * @return the created BlockCombo
+     */
+    private static BlockCombo createNonRotatedRandomCombo() {
         Random r = new Random();
 
         return switch (r.nextInt(14)) {

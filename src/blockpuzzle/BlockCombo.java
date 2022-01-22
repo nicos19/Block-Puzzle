@@ -3,6 +3,7 @@ package blockpuzzle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A BlockCombo describes a set of blocks with a particular formation and
@@ -157,6 +158,32 @@ public class BlockCombo {
             // BlockCombo is back in original formation
             rotation = 0;
         }
+    }
+
+    /**
+     * Rotates the BlockCombo randomly.
+     * 25% no rotation
+     * 25% 90° rotation
+     * 25% 180° rotation
+     * 25% 270° rotation
+     * The new formation becomes the original formation for this BlockCombo,
+     * so rotation is set to 0 and the BlockCombo is considered as non-rotated.
+     */
+    void rotateRandomly() {
+        if (!isRotatable()) {
+            return;
+        }
+
+        Random r = new Random();
+        int numberOfRotations = r.nextInt(4);
+
+        // rotate
+        for (int i = 0; i < numberOfRotations; i++) {
+            rotate();
+        }
+
+        // this formation becomes original formation
+        rotation = 0;
     }
 
     /**

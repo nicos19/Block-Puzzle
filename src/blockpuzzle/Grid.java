@@ -188,7 +188,7 @@ public class Grid {
     }
 
     /**
-     * Checks if given BlockCombo can be inserted into the grid, so that
+     * Checks if given BlockCombo can be inserted into the Grid, so that
      * BlockCombo's start block is inserted in given GridCell.
      * @param cell the GridCell for the start block
      * @param combo the BlockCombo to be inserted
@@ -213,6 +213,25 @@ public class Grid {
         }
 
         return true;
+    }
+
+    /**
+     * Checks if given BlockCombo can be inserted anywhere into the Grid.
+     * @param combo the BlockCombo to be inserted
+     * @return true if BlockCombo can be inserted anywhere, false otherwise
+     */
+    boolean canInsertBlockCombo(BlockCombo combo) {
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                if (canInsertBlockCombo(cells[y][x], combo)) {
+                    // combo can be inserted at cells[y][x]
+                    return true;
+                }
+            }
+        }
+
+        // combo cannot be inserted anywhere
+        return false;
     }
 
     /**

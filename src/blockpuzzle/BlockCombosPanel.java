@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A BlockCombosPanel is an extended JPanel that contains the logical and visual
@@ -36,6 +37,29 @@ public class BlockCombosPanel extends JPanel {
 
         // starts the game by creating the initial three BlockCombos
         generateNewBlockCombos();
+    }
+
+    /**
+     * Gets the list of all BlockCombos that must be used in the current
+     * round of the game, i.e. before new BlockCombos are generated.
+     * @return the BlockCombo to be used in this round
+     */
+    List<BlockCombo> getMustUseBlockCombos() {
+        List<BlockCombo> mustUseCombos = new ArrayList<>();
+
+        // get all open BlockCombos
+        for (SingleContainer<BlockCombo> container : openBlockCombos) {
+            if (!container.isEmpty()) {
+                mustUseCombos.add(container.getContent());
+            }
+        }
+
+        // get saved BlockCombo if it must be used this round
+        if (!savedBlockCombo.isEmpty() && remainingRoundsForSavedCombo == 0) {
+            mustUseCombos.add(savedBlockCombo.getContent());
+        }
+
+        return mustUseCombos;
     }
 
     /**
