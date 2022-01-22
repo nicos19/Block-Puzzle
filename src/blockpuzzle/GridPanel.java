@@ -5,12 +5,16 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A GridPanel is an extended JPanel that contains
  * the logical and visual representation of a Grid.
  */
 public class GridPanel extends JPanel {
+    private final GameManager gameManager;
+
     private final Grid grid;
     private final Map<GridCell, Color> highlightedCells = new HashMap<>();
 
@@ -23,8 +27,10 @@ public class GridPanel extends JPanel {
     private final int cellSize = 31;
     private final Rectangle gridArea;
 
-    GridPanel(GameManager gameManager) {
-        grid = new Grid(gameManager);
+    GridPanel(GameManager gameM) {
+        gameManager = gameM;
+
+        grid = new Grid(gameM);
         gridArea = new Rectangle(posX, posY,
                                 grid.getSize() * cellSize,
                                 grid.getSize() * cellSize);
@@ -117,12 +123,38 @@ public class GridPanel extends JPanel {
                     colorCell(g, grid.getCells()[y][x]);
                 }
                 else {
-                    // paint empty cells white
+                    // paint empty cells in light gray
                     g.setColor(new Color(230, 230, 230));
                     colorCell(g, grid.getCells()[y][x]);
                     g.setColor(Color.GRAY);
                 }
             }
+        }
+
+        // show effect for recently cleared cells
+        switch(grid.getRecentlyClearedTimer()) {
+            case 3:
+                for (GridCell clearedCell : grid.getRecentlyClearedCells()) {
+                    //g.setColor(new Color(155, 155, 155));
+                    g.setColor(new Color(0, 153, 0));
+                    colorCell(g, clearedCell);
+                    g.setColor(Color.GRAY);
+                }
+                break;
+            case 2:
+                for (GridCell clearedCell : grid.getRecentlyClearedCells()) {
+                    g.setColor(new Color(180, 180, 180));
+                    colorCell(g, clearedCell);
+                    g.setColor(Color.GRAY);
+                }
+                break;
+            case 1:
+                for (GridCell clearedCell : grid.getRecentlyClearedCells()) {
+                    g.setColor(new Color(205, 205, 205));
+                    colorCell(g, clearedCell);
+                    g.setColor(Color.GRAY);
+                }
+                break;
         }
 
         // highlight cells
@@ -138,6 +170,9 @@ public class GridPanel extends JPanel {
         }
 
         g.setColor(Color.BLACK);
+
+        // activates the effect for recently cleared cells if necessary
+        //gameManager.tryClearedCellsEffect();
     }
 
     /**

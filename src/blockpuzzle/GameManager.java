@@ -2,6 +2,8 @@ package blockpuzzle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A GameManager is an extended JFrame responsible for managing and visualizing the game.
@@ -63,6 +65,10 @@ public class GameManager extends JFrame {
             blockCombosPanel.generateNewBlockCombos();
             repaint();
         }
+    }
+
+    boolean isGameOver() {
+        return false;
     }
 
     /**

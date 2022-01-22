@@ -107,11 +107,18 @@ public class BlockCombosPanel extends JPanel {
      */
     void saveSelectedBlockCombo() {
         if (savedBlockCombo.isEmpty()) {
+            // save BlockCombo
             savedBlockCombo.store(openBlockCombos[selectedBlockCombo].getContent());
+            remainingRoundsForSavedCombo = maximumRemainingRoundsForSavedCombo;
+
+            // reset rotation of saved BlockCombo
+            getSelectedBlockCombo().resetRotation();
+
+            // remove saved BlockCombo from openBlockCombos and deselect it
             openBlockCombos[selectedBlockCombo].clear();
             deselectBlockCombo();
-            remainingRoundsForSavedCombo = maximumRemainingRoundsForSavedCombo;
-            highlightedComboArea = 3;
+
+            highlightedComboArea = 3;  // remember that mouse is over saved BlockCombo
 
             // GameManager starts next round if necessary
             gameManager.tryNextRound();
@@ -233,12 +240,13 @@ public class BlockCombosPanel extends JPanel {
             getSelectedBlockCombo().resetRotation();
         }
 
+        // set new selected BlockCombo
         selectedBlockCombo = index;
         highlightedComboArea = -1;
     }
 
     /**
-     * Deselects the currently selected BlockCombo.
+     * Deselects the currently selected BlockCombo and resets its rotation.
      */
     void deselectBlockCombo() {
         selectedBlockCombo = -1;

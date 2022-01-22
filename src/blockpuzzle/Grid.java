@@ -10,6 +10,8 @@ public class Grid {
     private final GameManager gameManager;
     private final int size = 9;
     private final GridCell[][] cells;
+    private final List<GridCell> recentlyClearedCells = new ArrayList<>();
+    private int recentlyClearedTimer = 0;
 
     Grid(GameManager manager) {
         gameManager = manager;
@@ -50,6 +52,36 @@ public class Grid {
     }
 
     /**
+     * Gets the list of recentlyClearedCells.
+     * @return the recentlyClearedCells
+     */
+    List<GridCell> getRecentlyClearedCells() {
+        return recentlyClearedCells;
+    }
+
+    /**
+     * Gets the recentlyClearedTimer value.
+     * @return the recentlyClearedTimer
+     */
+    int getRecentlyClearedTimer() {
+        return recentlyClearedTimer;
+    }
+
+    /**
+     * Decreases the value of recentlyClearedTimer by one.
+     */
+    void decreaseRecentlyClearedTimer() {
+        recentlyClearedTimer -= 1;
+    }
+
+    /**
+     * Clears the list of recentlyClearedCells.
+     */
+    void clearRecentlyClearedCells() {
+        recentlyClearedCells.clear();
+    }
+
+    /**
      * Identifies all rows and columns of the Grid whose
      * GridCells are all full and clears them.
      */
@@ -59,26 +91,34 @@ public class Grid {
 
         // find full rows
         for (int y = 0; y < size; y++) {
+            boolean rowYFull = true;
             for (int x = 0; x < size; x++) {
                 if (cells[y][x].isEmpty()) {
                     // empty cell found
+                    rowYFull = false;
                     break;
                 }
             }
-            // row y is full
-            fullRows.add(y);
+            if (rowYFull) {
+                // row y is full
+                fullRows.add(y);
+            }
         }
 
         // find full columns
         for (int x = 0; x < size; x++) {
+            boolean columnXFull = true;
             for (int y = 0; y < size; y++) {
                 if (cells[y][x].isEmpty()) {
                     // empty cell found
+                    columnXFull = false;
                     break;
                 }
             }
-            // column x is full
-            fullColumns.add(x);
+            if (columnXFull) {
+                // column x is full
+                fullColumns.add(x);
+            }
         }
 
         // clear full rows
@@ -91,6 +131,10 @@ public class Grid {
             clearColumn(column);
         }
 
+        if (!fullRows.isEmpty() || !fullColumns.isEmpty()) {
+            // remember that cells have just been cleared
+            recentlyClearedTimer = 4;
+        }
     }
 
     /**
@@ -99,7 +143,13 @@ public class Grid {
      */
     private void clearRow(int y) {
         for (int x = 0; x < size; x++) {
+            // clear cell
             cells[y][x].clear();
+
+            // remember cell as recently cleared
+            if (!recentlyClearedCells.contains(cells[y][x])) {
+                recentlyClearedCells.add(cells[y][x]);
+            }
         }
     }
 
@@ -109,13 +159,20 @@ public class Grid {
      */
     private void clearColumn(int x) {
         for (int y = 0; y < size; y++) {
+            // clear cell
             cells[y][x].clear();
+
+            // remember cell as recently cleared
+            if (!recentlyClearedCells.contains(cells[y][x])) {
+                recentlyClearedCells.add(cells[y][x]);
+            }
         }
     }
 
     /**
      * Inserts given BlockCombo into the Grid, so that BlockCombo's
      * start block is inserted in given GridCell.
+     * Clears all full rows and columns afterwards.
      * @param cell the GridCell for the start block
      * @param combo the BlockCombo to be inserted
      */
@@ -127,6 +184,7 @@ public class Grid {
             // fill target cell
             targetCell.fill();
         }
+        clearFullRowsAndColumns();
     }
 
     /**

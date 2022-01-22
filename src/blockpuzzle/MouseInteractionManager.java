@@ -4,6 +4,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.Color;
+import java.sql.Time;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A MouseInteractionManager is responsible for detecting mouse clicks and movements.
@@ -57,6 +59,9 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
                 }
             }
             gameManager.repaint();
+
+            ClearedCellsEffect c = new ClearedCellsEffect(gameManager, gridPanel);
+            c.tryClearedCellsEffect();
         }
         // check if player selects or saves any BlockCombo
         else if (e.getSource() == blockCombosPanel
