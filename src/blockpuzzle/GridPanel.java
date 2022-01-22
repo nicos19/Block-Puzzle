@@ -170,7 +170,9 @@ public class GridPanel extends JPanel {
         }
 
         // if game is over, draw "GAME OVER" writing
-        drawGameOverWriting(g);
+        if(gameManager.isGameOver()) {
+            drawGameOverWriting(g);
+        }
     }
 
     /**

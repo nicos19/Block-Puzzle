@@ -18,6 +18,8 @@ public class GameManager extends JFrame {
     // how many BlockCombos can the player rotate
     private int rotations = 3;
 
+    private boolean gameOver = false;
+
     GameManager() {
         // set layout
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
@@ -56,6 +58,7 @@ public class GameManager extends JFrame {
      * Starts next round of the game if current round is over, i.e. if
      * player used all of its available BlockCombos.
      * Next round results in three new BlockCombos becoming available.
+     * Checks for game over after BlockCombo generating.
      */
     void tryNextRound() {
         if (blockCombosPanel.openBlockCombosIsEmpty()
@@ -64,6 +67,18 @@ public class GameManager extends JFrame {
             blockCombosPanel.generateNewBlockCombos();
             repaint();
         }
+
+        // check for game over
+        tryGameOver();
+    }
+
+    /**
+     * Checks if the game is over and remembers if it is.
+     */
+    void tryGameOver() {
+        if (checkForGameOver()) {
+            gameOver = true;
+        }
     }
 
     /**
@@ -71,7 +86,7 @@ public class GameManager extends JFrame {
      * be used before the next round starts and no such BlockCombo can be inserted.
      * @return true if the game is over, false otherwise
      */
-    boolean isGameOver() {
+    private boolean checkForGameOver() {
         List<BlockCombo> mustUseBlockCombos = blockCombosPanel.getMustUseBlockCombos();
         if (mustUseBlockCombos.isEmpty()) {
             // player has no BlockCombos that must be used this round
@@ -98,6 +113,14 @@ public class GameManager extends JFrame {
 
         // no BlockCombo insertable -> Game Over
         return true;
+    }
+
+    /**
+     * Checks if the game was declared as over.
+     * @return true if game is over, false otherwise
+     */
+    boolean isGameOver() {
+        return gameOver;
     }
 
     /**

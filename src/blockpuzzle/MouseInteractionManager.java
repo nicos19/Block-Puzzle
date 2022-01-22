@@ -57,6 +57,8 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
                 if (selectedCombo.isRotated()) {
                     gameManager.consumeRotation();
                 }
+                // check for game over
+                gameManager.tryGameOver();
             }
             gameManager.repaint();
 
