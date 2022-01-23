@@ -2,11 +2,8 @@ package blockpuzzle;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A GridPanel is an extended JPanel that contains
@@ -34,6 +31,13 @@ public class GridPanel extends JPanel {
         gridArea = new Rectangle(posX, posY,
                                 grid.getSize() * cellSize,
                                 grid.getSize() * cellSize);
+    }
+
+    /**
+     * Resets the GridPanel (and so clears the Grid) to its initial state.
+     */
+    void reset() {
+        grid.clear();
     }
 
     /**
@@ -192,15 +196,21 @@ public class GridPanel extends JPanel {
      * @param g the Graphics object given by paintComponent() / drawGrid()
      */
     private void drawGameOverWriting(Graphics g) {
+        // fade the Grid
         g.setColor(new Color(255, 255, 255, 170));
         g.fillRect(posX - 1, posY - 1,
                 (cellSize - 1) * grid.getSize() + grid.getSize() + 2,
                 (cellSize - 1) * grid.getSize() + grid.getSize() + 2);
         g.setColor(new Color(20, 20, 20));
 
+        // draw "GAME OVER"
         g.setFont(new Font("Monospaced", Font.BOLD, 105));
-        g.drawString("GAME", posX + 13, posY + 124);
-        g.drawString("OVER", posX + 13, posY + 217);
+        g.drawString("GAME", posX + 13, posY + 109);
+        g.drawString("OVER", posX + 13, posY + 202);
+
+        // tell player that click restarts game
+        g.setFont(new Font("Monospaced", Font.BOLD, 26));
+        g.drawString("Click to Restart", posX + 12, posY + 270);
     }
 
     @Override protected void paintComponent(Graphics g) {

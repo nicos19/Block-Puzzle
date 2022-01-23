@@ -4,8 +4,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.Color;
-import java.sql.Time;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A MouseInteractionManager is responsible for detecting mouse clicks and movements.
@@ -24,6 +22,13 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        // check if game is over
+        if (gameManager.isGameOver()) {
+            // click restarts game
+            gameManager.restart();
+            return;
+        }
+
         // check if player clicked RMT to rotate selected BlockCombo
         if (e.getButton() == MouseEvent.BUTTON3) {
             if (blockCombosPanel.isAnyBlockComboSelected()
@@ -101,6 +106,12 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        // check if game is over
+        if (gameManager.isGameOver()) {
+            // no mouse over effect if game is over
+            return;
+        }
+
         // check if player is hovering over the grid
         if (e.getSource() == gridPanel && gridPanel.isMouseOverGrid(e.getPoint())
                 && blockCombosPanel.isAnyBlockComboSelected()) {

@@ -40,6 +40,20 @@ public class BlockCombosPanel extends JPanel {
     }
 
     /**
+     * Resets the BlockCombosPanel to its initial state.
+     * All open or saved BlockCombos are removed.
+     */
+    void reset() {
+        // clear openBlockCombos
+        for (SingleContainer<BlockCombo> container : openBlockCombos) {
+            container.clear();
+        }
+        // clear savedBlockCombo
+        savedBlockCombo.clear();
+        remainingRoundsForSavedCombo = maximumRemainingRoundsForSavedCombo;
+    }
+
+    /**
      * Gets the list of all BlockCombos that must be used in the current
      * round of the game, i.e. before new BlockCombos are generated.
      * @return the BlockCombo to be used in this round
@@ -70,6 +84,14 @@ public class BlockCombosPanel extends JPanel {
     boolean openBlockCombosIsEmpty() {
         return openBlockCombos[0].isEmpty() && openBlockCombos[1].isEmpty()
                 && openBlockCombos[2].isEmpty();
+    }
+
+    /**
+     * Checks if there is any BlockCombo saved.
+     * @return true if savedBlockCombo is empty, false otherwise
+     */
+    boolean savedBlockComboIsEmpty() {
+        return savedBlockCombo.isEmpty();
     }
 
     /**
@@ -310,17 +332,18 @@ public class BlockCombosPanel extends JPanel {
             drawSingleBlockCombo(g, savedBlockCombo.getContent(), initialPosition);
             // highlight area for saved BlockCombo if remainingRounds == 0
             if (remainingRoundsForSavedCombo == 0) {
-                g.setColor(Color.RED);
+                g.setColor(new Color(200, 0, 0));
                 g.drawRect(15 + 3 * 65 + 20, 30, 55, 55);
                 g.setColor(standardColor);
             }
         }
 
         // draw remainingRemainingRoundsForSavedCombo (if any combo saved)
+        g.setFont(new Font("Monospaced", Font.PLAIN, 12));
         if (!savedBlockCombo.isEmpty()) {
             if (remainingRoundsForSavedCombo != maximumRemainingRoundsForSavedCombo)  {
                 if (remainingRoundsForSavedCombo == 0) {
-                    g.setColor(Color.RED);
+                    g.setColor(new Color(200, 0, 0));
                 }
                 g.drawString(String.valueOf(remainingRoundsForSavedCombo), 255, 26);
                 g.setColor(standardColor);
@@ -328,10 +351,10 @@ public class BlockCombosPanel extends JPanel {
         }
 
         // draw number of remaining rotations
-        g.drawString("Rotations: " + gameManager.getRotations(), 15, 20);
+        g.drawString("Rotations: " + gameManager.getRotations(), 15, 16);
         if (isAnyBlockComboSelected() && getSelectedBlockCombo().isRotated()) {
             g.setColor(Color.RED);
-            g.drawString("-1", 100, 20);
+            g.drawString(" -1", 100, 16);
             g.setColor(standardColor);
         }
 
@@ -366,7 +389,7 @@ public class BlockCombosPanel extends JPanel {
      * @param g the Graphics object given by paintComponent()
      */
     private void drawSelection(Graphics g) {
-        g.setColor(Color.GREEN);
+        g.setColor(new Color(50, 170, 10));
 
         switch(selectedBlockCombo) {
             case -1:
@@ -399,6 +422,10 @@ public class BlockCombosPanel extends JPanel {
                 // no highlighting
                 break;
             case 3:
+                if (gameManager.isGameOver()) {
+                    highlightedComboArea = -1;
+                    break;
+                }
                 // saved BlockCombo is highlighted
                 g.fillRect(16 + 3 * 65 + 20, 31, 54, 54);
                 break;

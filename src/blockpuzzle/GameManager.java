@@ -16,7 +16,8 @@ public class GameManager extends JFrame {
             = new MouseInteractionManager(this, gridPanel, blockCombosPanel);
 
     // how many BlockCombos can the player rotate
-    private int rotations = 3;
+    private final int initialRotations = 3;
+    private int rotations = initialRotations;
 
     private boolean gameOver = false;
 
@@ -52,6 +53,22 @@ public class GameManager extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         pack();
+    }
+
+    /**
+     * Starts a new game.
+     */
+    void restart() {
+        rotations = initialRotations;
+        gameOver = false;
+
+        // reset Panels
+        //topPanel.reset()
+        gridPanel.reset();
+        blockCombosPanel.reset();
+
+        // generate initial BlockCombos
+        blockCombosPanel.generateNewBlockCombos();
     }
 
     /**
@@ -102,13 +119,21 @@ public class GameManager extends JFrame {
 
             // if rotations available: check if rotated combo can be inserted into Grid
             if (rotations > 0) {
+                BlockCombo comboRotated = combo.createCopy();
                 for (int i = 0; i < 3; i++) {
-                    combo.rotate();
-                    if (gridPanel.getGrid().canInsertBlockCombo(combo)) {
+                    comboRotated.rotate();
+                    if (gridPanel.getGrid().canInsertBlockCombo(comboRotated)) {
                         return false;
                     }
                 }
             }
+        }
+
+        if (mustUseBlockCombos.size() == 1
+                && blockCombosPanel.savedBlockComboIsEmpty()) {
+            // case: there is exactly one open BlockCombo, and no BlockCombo is saved
+            // player can save the open BlockCombo to continue game
+            return false;
         }
 
         // no BlockCombo insertable -> Game Over

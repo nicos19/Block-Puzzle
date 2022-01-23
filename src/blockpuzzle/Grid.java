@@ -26,6 +26,17 @@ public class Grid {
     }
 
     /**
+     * Clears all GridCells of this Grid.
+     */
+    void clear() {
+      for (int x = 0; x < size; x++) {
+          for (int y = 0; y < size; y++) {
+              cells[y][x].clear();
+          }
+      }
+    }
+
+    /**
      * Gets the size of this Grid.
      * @return the size
      */
