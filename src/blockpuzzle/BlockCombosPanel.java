@@ -351,12 +351,17 @@ public class BlockCombosPanel extends JPanel {
         }
 
         // draw number of remaining rotations
-        g.drawString("Rotations: " + gameManager.getRotations(), 15, 16);
+        g.drawString("Rotations: " + gameManager.getRotations(), 15, 20);
         if (isAnyBlockComboSelected() && getSelectedBlockCombo().isRotated()) {
-            g.setColor(Color.RED);
-            g.drawString(" -1", 100, 16);
+            g.setColor(new Color(200, 0, 0));
+            g.drawString(" -1", 100, 20);
             g.setColor(standardColor);
         }
+        // draw bar that shows when next rotation is unlocked
+        g.drawRect(15, 1, 61, 3);
+        g.setColor(new Color(0, 153, 0));
+        g.fillRect(16, 2, gameManager.getNextRotation() * 6 / 10, 2);
+        g.setColor(standardColor);
 
         // draw selection
         drawSelection(g);
@@ -447,6 +452,5 @@ public class BlockCombosPanel extends JPanel {
         super.paintComponent(g);
         drawBlockCombos(g);
     }
-
 
 }

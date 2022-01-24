@@ -3,13 +3,12 @@ package blockpuzzle;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A GameManager is an extended JFrame responsible for managing and visualizing the game.
  */
 public class GameManager extends JFrame {
-    private final JPanel topPanel = new JPanel();
+    private final ScorePanel scorePanel = new ScorePanel();
     private final GridPanel gridPanel = new GridPanel(this);
     private final BlockCombosPanel blockCombosPanel = new BlockCombosPanel(this);
     private final MouseInteractionManager mouseInteractionManager
@@ -19,6 +18,9 @@ public class GameManager extends JFrame {
     private final int initialRotations = 3;
     private int rotations = initialRotations;
 
+    // when nextRotation reaches 100, player gets a new rotation
+    private int nextRotation = 0;
+
     private boolean gameOver = false;
 
     GameManager() {
@@ -26,7 +28,7 @@ public class GameManager extends JFrame {
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
         // add panels to frame
-        add(topPanel);
+        add(scorePanel);
         add(gridPanel);
         add(blockCombosPanel);
 
@@ -38,13 +40,13 @@ public class GameManager extends JFrame {
 
         // set panel background colors
         Color backgroundColor = new Color(20, 20, 20);
-        topPanel.setBackground(backgroundColor);
+        scorePanel.setBackground(backgroundColor);
         gridPanel.setBackground(backgroundColor);
         blockCombosPanel.setBackground(backgroundColor);
 
         // set panels' sizes
-        topPanel.setPreferredSize(new Dimension(300, 50));
-        topPanel.setMaximumSize(new Dimension(300, 50));
+        scorePanel.setPreferredSize(new Dimension(300, 50));
+        scorePanel.setMaximumSize(new Dimension(300, 50));
         gridPanel.setPreferredSize(new Dimension(300, 300));
         gridPanel.setMaximumSize(new Dimension(300, 300));
         blockCombosPanel.setPreferredSize(new Dimension(300, 100));
@@ -63,7 +65,7 @@ public class GameManager extends JFrame {
         gameOver = false;
 
         // reset Panels
-        //topPanel.reset()
+        scorePanel.reset();
         gridPanel.reset();
         blockCombosPanel.reset();
 
@@ -157,10 +159,35 @@ public class GameManager extends JFrame {
     }
 
     /**
+     * Gets nextRotation.
+     * @return nextRotation
+     */
+    int getNextRotation() {
+        return nextRotation;
+    }
+
+    /**
      * Increases the number of available rotations by one.
      */
     void addRotation() {
         rotations += 1;
+    }
+
+    /**
+     * Updates nextRotation depending on the number of recently cleared rows and columns.
+     * If nextRotation reaches 100, the player gets a new rotation.
+     * @param clearedRowsAndColumns the number of recently cleared rows and columns
+     */
+    void updateNextRotation(int clearedRowsAndColumns) {
+        // nextRotation increases if player cleared at least two rows and columns
+        nextRotation += (clearedRowsAndColumns - 1) * 20;
+
+        // add rotation if necessary
+        while (nextRotation >= 100) {
+            addRotation();
+            nextRotation -= 100;
+        }
+        // now: nextRotation < 100
     }
 
     /**
@@ -173,6 +200,31 @@ public class GameManager extends JFrame {
                     "useRotation() should not be called if rotations == 0.");
         }
         rotations -= 1;
+    }
+
+    /**
+     * Updates the score of the current game depending on how many cells and
+     * rows/columns have just been cleared.
+     * scoreToAdd = 10 * numberOfClearedCells * numberOfClearedRowsAndColumns
+     * Unlocks new rotation if nextRotation exceeds 100
+     * @param clearedRows the list of rows which have just been cleared
+     * @param clearedColumns the list of columns which have just been cleared
+     */
+    void updateScore(List<Integer> clearedRows, List<Integer> clearedColumns) {
+        int gridSize = gridPanel.getGrid().getSize();
+
+        int numberOfClearedRowsAndColumns = clearedRows.size() + clearedColumns.size();
+        int numberOfClearedCells =
+                gridSize * clearedRows.size()
+                        + (gridSize - clearedRows.size()) * clearedColumns.size();
+
+        int scoreToAdd = 10 * numberOfClearedCells * numberOfClearedRowsAndColumns;
+
+        // add rotation if necessary
+        updateNextRotation(numberOfClearedRowsAndColumns);
+
+        // increase the score
+        scorePanel.increaseScoreBy(scoreToAdd);
     }
 
 

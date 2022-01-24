@@ -145,6 +145,9 @@ public class Grid {
         if (!fullRows.isEmpty() || !fullColumns.isEmpty()) {
             // remember that cells have just been cleared
             recentlyClearedTimer = 4;
+
+            // update score
+            gameManager.updateScore(fullRows, fullColumns);
         }
     }
 
