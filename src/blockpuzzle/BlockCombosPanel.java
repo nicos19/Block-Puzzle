@@ -40,6 +40,31 @@ public class BlockCombosPanel extends JPanel {
     }
 
     /**
+     * Restores the BlockCombosPanel based on the
+     * game state represented by given savegame.
+     * @param savegame the Savegame representing the game state to be restored
+     */
+    void restorePanel(Savegame savegame) {
+        // restore openBlockCombos
+        for (int i = 0; i < openBlockCombos.length; i++) {
+            openBlockCombos[i].clear();
+            if (savegame.getOpenCombos()[i].representsBlockCombo()) {
+                // container i shall contain a BlockCombo
+                openBlockCombos[i].store(
+                        savegame.getOpenCombos()[i].restoreBlockCombo());
+            }
+        }
+
+        // restore savedBlockCombo
+        savedBlockCombo.clear();
+        if (savegame.getSavedCombo().representsBlockCombo()) {
+            // there shall be a saved BlockCombo
+            savedBlockCombo.store(savegame.getSavedCombo().restoreBlockCombo());
+        }
+        remainingRoundsForSavedCombo = savegame.getRemainingRoundsForSavedCombo();
+    }
+
+    /**
      * Resets the BlockCombosPanel to its initial state.
      * All open or saved BlockCombos are removed.
      */
@@ -51,6 +76,30 @@ public class BlockCombosPanel extends JPanel {
         // clear savedBlockCombo
         savedBlockCombo.clear();
         remainingRoundsForSavedCombo = maximumRemainingRoundsForSavedCombo;
+    }
+
+    /**
+     * Gets the array with all SingleContainer for open BlockCombos.
+     * @return the openBlockCombos
+     */
+    SingleContainer<BlockCombo>[] getOpenBlockCombos() {
+        return openBlockCombos;
+    }
+
+    /**
+     * Gets the SingleContainer for saved BlockCombos.
+     * @return the savedBlockCombo
+     */
+    SingleContainer<BlockCombo> getSavedBlockCombo() {
+        return savedBlockCombo;
+    }
+
+    /**
+     * Gets the number of remaining rounds until the saved BlockCombo must be used.
+     * @return the remainingRoundsForSavedCombo
+     */
+    int getRemainingRoundsForSavedCombo() {
+        return remainingRoundsForSavedCombo;
     }
 
     /**

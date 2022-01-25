@@ -74,6 +74,17 @@ public class GameManager extends JFrame {
     }
 
     /**
+     * Restores the GameManager based on the game
+     * state represented by the given savegame.
+     * @param savegame the Savegame representing the game state to be restored
+     */
+    void restoreGameManager(Savegame savegame) {
+        rotations = savegame.getRotations();
+        nextRotation = savegame.getNextRotation();
+        gameOver = savegame.isGameOver();
+    }
+
+    /**
      * Starts next round of the game if current round is over, i.e. if
      * player used all of its available BlockCombos.
      * Next round results in three new BlockCombos becoming available.

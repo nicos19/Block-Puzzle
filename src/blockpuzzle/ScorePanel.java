@@ -7,6 +7,30 @@ public class ScorePanel extends JPanel {
     private int highScore = 0;
     private int score = 0;
 
+    /**
+     * Restores the ScorePanel based on the game state represented by given savegame.
+     * @param savegame the Savegame representing the game state to be restored
+     */
+    void restorePanel(Savegame savegame) {
+        highScore = savegame.getHighScore();
+        score = savegame.getScore();
+    }
+
+    /**
+     * Gets the highScore.
+     * @return the highScore
+     */
+    int getHighScore() {
+        return highScore;
+    }
+
+    /**
+     * Gets the current score.
+     * @return the score
+     */
+    int getScore() {
+        return score;
+    }
 
     /**
      * Resets the score (not the highScore).

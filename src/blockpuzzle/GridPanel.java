@@ -34,6 +34,22 @@ public class GridPanel extends JPanel {
     }
 
     /**
+     * Restores the GridPanel based on the game state represented by given savegame.
+     * @param savegame the Savegame representing the game state to be restored
+     */
+    void restorePanel(Savegame savegame) {
+        // fill cells that are marked as filled in savegame's grid
+        for (int x = 0; x < grid.getSize(); x++) {
+            for (int y = 0; y < grid.getSize(); y++) {
+                if (savegame.getGrid()[y][x]) {
+                    // cell at (x, y) shall be full
+                    grid.getCellAt(x, y).fill();
+                }
+            }
+        }
+    }
+
+    /**
      * Resets the GridPanel (and so clears the Grid) to its initial state.
      */
     void reset() {
