@@ -49,6 +49,7 @@ public class Savegame implements Serializable {
 
     /**
      * Creates the 2-dimensional array that represents the Grid's current state.
+     * array[y][x] == true if and only if cell at (x, y) is NOT empty
      * @param grid the Grid that shall be converted to an array
      * @return the array representing the Grid
      */
@@ -57,7 +58,7 @@ public class Savegame implements Serializable {
 
         for (int x = 0; x < grid.getSize(); x++) {
             for (int y = 0; y < grid.getSize(); y++) {
-                gridArray[y][x] = grid.getCellAt(x, y).isEmpty();
+                gridArray[y][x] = !grid.getCellAt(x, y).isEmpty();
             }
         }
 

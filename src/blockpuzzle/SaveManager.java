@@ -30,9 +30,9 @@ public class SaveManager {
      * Saves the current game state by creating a Savegame Obbject and serializing it.
      */
     void saveGameState() {
-        // create directory for Savegames
+        // create directory for Savegames (if it does not already exist)
         File targetDirectory = new File("Savegames");
-        targetDirectory.mkdir();
+        targetDirectory.mkdir();  // does nothing if directory already exists
 
         // create file for Savegame
         File file = new File("Savegames" + File.separator
@@ -80,9 +80,17 @@ public class SaveManager {
     Savegame loadSavegame() {
         Savegame loadedSavegame = null;
 
+        File savegameFile = new File(
+                "Savegames" + File.separator + "Savegame.save");
+
+        if (!savegameFile.exists()) {
+            // no savegame file found -> abort loading
+            return loadedSavegame;
+        }
+
         try {
-            FileInputStream fileInputStream = new FileInputStream("Savegames"
-                    + File.separator + "Savegame.save");
+            FileInputStream fileInputStream
+                    = new FileInputStream(savegameFile.getPath());
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             loadedSavegame = (Savegame) objectInputStream.readObject();
             objectInputStream.close();

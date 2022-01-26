@@ -41,7 +41,9 @@ public class BlockCombo {
             int[] blockCopy = {block[0], block[1]};
             formationCopy.add(blockCopy);
         }
-        return new BlockCombo(formationCopy);
+        BlockCombo comboCopy = new BlockCombo(formationCopy);
+        comboCopy.rotation = rotation;  // copy rotation state
+        return comboCopy;
     }
 
     /**
@@ -144,7 +146,7 @@ public class BlockCombo {
     /**
      * Rotates the BlockCombo 90° to the right.
      */
-    void rotate() {
+    private void rotate() {
         // calculate for all blocks in formation the new distance to start block
         for (int i = 0; i < comboFormation.size(); i++) {
             int[] newDistance = {-comboFormation.get(i)[1],

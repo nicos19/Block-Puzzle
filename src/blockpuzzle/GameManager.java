@@ -13,6 +13,8 @@ public class GameManager extends JFrame {
     private final BlockCombosPanel blockCombosPanel = new BlockCombosPanel(this);
     private final MouseInteractionManager mouseInteractionManager
             = new MouseInteractionManager(this, gridPanel, blockCombosPanel);
+    private final SaveManager saveManager
+            = new SaveManager(this, scorePanel, gridPanel, blockCombosPanel);
 
     // how many BlockCombos can the player rotate
     private final int initialRotations = 3;
@@ -55,6 +57,24 @@ public class GameManager extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         pack();
+    }
+
+    /**
+     * Saves the state of the current game.
+     */
+    void saveGame() {
+        saveManager.saveGameState();
+    }
+
+    /**
+     * Restores the state of a previously saved game if a savegame file exists.
+     */
+    void restoreGame() {
+        Savegame savegame = saveManager.loadSavegame();
+        if (savegame != null) {
+            // a Savegame has been loaded -> restore saved game state
+            saveManager.restoreGameState(savegame);
+        }
     }
 
     /**
@@ -134,7 +154,7 @@ public class GameManager extends JFrame {
             if (rotations > 0) {
                 BlockCombo comboRotated = combo.createCopy();
                 for (int i = 0; i < 3; i++) {
-                    comboRotated.rotate();
+                    comboRotated.tryRotate();
                     if (gridPanel.getGrid().canInsertBlockCombo(comboRotated)) {
                         return false;
                     }
@@ -240,9 +260,24 @@ public class GameManager extends JFrame {
 
 
     public static void main(String[] args) {
+        // start game
         GameManager gameManager = new GameManager();
         gameManager.setPreferredSize(new Dimension(300, 450));
         gameManager.setVisible(true);
+
+        // try loading and restoring savegame
+        gameManager.restoreGame();
+
+        // before application exit
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            public void run()
+            {
+                // save current game state
+                gameManager.saveGame();
+            }
+        });
+
     }
 
 }

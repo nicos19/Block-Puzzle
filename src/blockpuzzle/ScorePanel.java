@@ -64,7 +64,7 @@ public class ScorePanel extends JPanel {
         g.drawString("Best: " + highScore, 15, 24);
 
         // draw current score
-        g.setFont(new Font("Monospaced", Font.PLAIN, 20));
+        g.setFont(new Font("Monospaced", Font.BOLD, 20));
         g.drawString("Score: " + score, 14, 48);
     }
 

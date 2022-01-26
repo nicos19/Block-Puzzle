@@ -23,7 +23,7 @@ public class BlockComboSave implements Serializable {
         }
         else {
             // save the formation of the non-rotated BlockCombo
-            BlockCombo combo = comboContainer.getContent().createCopy();
+            BlockCombo combo = comboContainer.getContent();
             combo.resetRotation();
             comboFormation = combo.getComboFormation();
         }
@@ -39,10 +39,10 @@ public class BlockComboSave implements Serializable {
 
     /**
      * Checks if this BlockComboSave is representing a BlockCombo or not.
-     * @return true if comboFormation is empty, false otherwise
+     * @return true if comboFormation is NOT empty, false otherwise
      */
     boolean representsBlockCombo() {
-        return comboFormation.isEmpty();
+        return !comboFormation.isEmpty();
     }
 
 
