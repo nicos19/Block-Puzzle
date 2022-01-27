@@ -137,40 +137,47 @@ public class GameManager extends JFrame {
      * @return true if the game is over, false otherwise
      */
     private boolean checkForGameOver() {
-        List<BlockCombo> mustUseBlockCombos = blockCombosPanel.getMustUseBlockCombos();
-        if (mustUseBlockCombos.isEmpty()) {
-            // player has no BlockCombos that must be used this round
-            // GameManager starts next round
+        SingleContainer<BlockCombo>[] openCombos = blockCombosPanel.getOpenBlockCombos();
+        SingleContainer<BlockCombo> savedCombo = blockCombosPanel.getSavedBlockCombo();
+
+        if (blockCombosPanel.openBlockCombosIsEmpty()) {
+            // no open BlockCombos
+            if (!savedCombo.isEmpty()
+                    && blockCombosPanel.getRemainingRoundsForSavedCombo() == 0) {
+                // there is a saved BlockCombo that must be used this round
+                if (!gridPanel.getGrid().canInsertBlockCombo(savedCombo.getContent(),
+                        rotations > 0)) {
+                    // savedCombo cannot be inserted
+                    return true;
+                }
+            }
             return false;
         }
-
-        for (BlockCombo combo : mustUseBlockCombos) {
-            // check if combo can be inserted into Grid
-            if (gridPanel.getGrid().canInsertBlockCombo(combo)) {
-                return false;
-            }
-
-            // if rotations available: check if rotated combo can be inserted into Grid
-            if (rotations > 0) {
-                BlockCombo comboRotated = combo.createCopy();
-                for (int i = 0; i < 3; i++) {
-                    comboRotated.tryRotate();
-                    if (gridPanel.getGrid().canInsertBlockCombo(comboRotated)) {
+        else {
+            // there is at least one open BlockCombo
+            for (SingleContainer<BlockCombo> container : openCombos) {
+                if (!container.isEmpty()) {
+                    if (gridPanel.getGrid().canInsertBlockCombo(
+                            container.getContent(), rotations > 0)) {
+                        // BlockCombo in container can be inserted
                         return false;
                     }
                 }
             }
-        }
 
-        if (mustUseBlockCombos.size() == 1
-                && blockCombosPanel.savedBlockComboIsEmpty()) {
-            // case: there is exactly one open BlockCombo, and no BlockCombo is saved
-            // player can save the open BlockCombo to continue game
-            return false;
-        }
+            // no open BlockCombo can be inserted
 
-        // no BlockCombo insertable -> Game Over
-        return true;
+            if (savedCombo.isEmpty()) {
+                // no saved BlockCombo (-> one open BlockCombo could be saved)
+                // GAME OVER if there are multiple open BlockCombos
+                return blockCombosPanel.getNumberOfOpenBlockCombos() > 1;
+            }
+            else {
+                // GAME OVER if saved BlockCombo cannot be inserted, too
+                return !gridPanel.getGrid().canInsertBlockCombo(savedCombo.getContent(),
+                        rotations > 0);
+            }
+        }
     }
 
     /**

@@ -87,6 +87,22 @@ public class BlockCombosPanel extends JPanel {
     }
 
     /**
+     * Gets the number of open BlockCombos.
+     * @return the number of non-empty SingleContainer in openBlockCombos.
+     */
+    int getNumberOfOpenBlockCombos() {
+        int numberOfOpenCombos = 0;
+
+        for (SingleContainer<BlockCombo> container : openBlockCombos) {
+            if (!container.isEmpty()) {
+                numberOfOpenCombos += 1;
+            }
+        }
+
+        return numberOfOpenCombos;
+    }
+
+    /**
      * Gets the SingleContainer for saved BlockCombos.
      * @return the savedBlockCombo
      */
@@ -103,29 +119,6 @@ public class BlockCombosPanel extends JPanel {
     }
 
     /**
-     * Gets the list of all BlockCombos that must be used in the current
-     * round of the game, i.e. before new BlockCombos are generated.
-     * @return the BlockCombo to be used in this round
-     */
-    List<BlockCombo> getMustUseBlockCombos() {
-        List<BlockCombo> mustUseCombos = new ArrayList<>();
-
-        // get all open BlockCombos
-        for (SingleContainer<BlockCombo> container : openBlockCombos) {
-            if (!container.isEmpty()) {
-                mustUseCombos.add(container.getContent());
-            }
-        }
-
-        // get saved BlockCombo if it must be used this round
-        if (!savedBlockCombo.isEmpty() && remainingRoundsForSavedCombo == 0) {
-            mustUseCombos.add(savedBlockCombo.getContent());
-        }
-
-        return mustUseCombos;
-    }
-
-    /**
      * Checks if player has any available (open) BlockCombos remaining.
      * @return true if all SingleContainers of openBlockCombos is empty,
      * false otherwise
@@ -133,14 +126,6 @@ public class BlockCombosPanel extends JPanel {
     boolean openBlockCombosIsEmpty() {
         return openBlockCombos[0].isEmpty() && openBlockCombos[1].isEmpty()
                 && openBlockCombos[2].isEmpty();
-    }
-
-    /**
-     * Checks if there is any BlockCombo saved.
-     * @return true if savedBlockCombo is empty, false otherwise
-     */
-    boolean savedBlockComboIsEmpty() {
-        return savedBlockCombo.isEmpty();
     }
 
     /**

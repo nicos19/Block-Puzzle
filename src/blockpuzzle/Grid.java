@@ -232,14 +232,27 @@ public class Grid {
     /**
      * Checks if given BlockCombo can be inserted anywhere into the Grid.
      * @param combo the BlockCombo to be inserted
+     * @param withRotation specifies if BlockCombo can be rotated before inserting
      * @return true if BlockCombo can be inserted anywhere, false otherwise
      */
-    boolean canInsertBlockCombo(BlockCombo combo) {
+    boolean canInsertBlockCombo(BlockCombo combo, boolean withRotation) {
+
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 if (canInsertBlockCombo(cells[y][x], combo)) {
                     // combo can be inserted at cells[y][x]
                     return true;
+                }
+
+                if (withRotation) {
+                    BlockCombo comboCopy = combo.createCopy();
+                    for (int i = 0; i < 3; i++) {
+                        comboCopy.tryRotate();
+                        if (canInsertBlockCombo(cells[y][x], comboCopy)) {
+                            // rotated combo can be inserted at cells[y][x]
+                            return true;
+                        }
+                    }
                 }
             }
         }
