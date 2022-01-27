@@ -220,13 +220,12 @@ public class GridPanel extends JPanel {
         g.setColor(new Color(20, 20, 20));
 
         // draw "GAME OVER"
-        g.setFont(new Font("Monospaced", Font.BOLD, 105));
-        g.drawString("GAME", posX + 13, posY + 109);
-        g.drawString("OVER", posX + 13, posY + 202);
+        g.setFont(new Font("Monospaced", Font.BOLD, 35));
+        g.drawString("Game Over", posX + 46, posY + 119);
 
         // tell player that click restarts game
-        g.setFont(new Font("Monospaced", Font.BOLD, 26));
-        g.drawString("Click to Restart", posX + 12, posY + 270);
+        g.setFont(new Font("Monospaced", Font.BOLD, 23));
+        g.drawString("Click to Restart", posX + 28, posY + 178);
     }
 
     @Override protected void paintComponent(Graphics g) {

@@ -82,6 +82,7 @@ public class GameManager extends JFrame {
      */
     void restart() {
         rotations = initialRotations;
+        nextRotation = 0;
         gameOver = false;
 
         // reset Panels
