@@ -12,7 +12,8 @@ public class GameManager extends JFrame {
     private final GridPanel gridPanel = new GridPanel(this);
     private final BlockCombosPanel blockCombosPanel = new BlockCombosPanel(this);
     private final MouseInteractionManager mouseInteractionManager
-            = new MouseInteractionManager(this, gridPanel, blockCombosPanel);
+            = new MouseInteractionManager(
+                    this, scorePanel, gridPanel, blockCombosPanel);
     private final SaveManager saveManager
             = new SaveManager(this, scorePanel, gridPanel, blockCombosPanel);
 
@@ -271,6 +272,7 @@ public class GameManager extends JFrame {
         // start game
         GameManager gameManager = new GameManager();
         gameManager.setPreferredSize(new Dimension(300, 450));
+        gameManager.setLocationRelativeTo(null);  // frame placed at center of screen
         gameManager.setVisible(true);
 
         // try loading and restoring savegame

@@ -10,10 +10,12 @@ import java.awt.event.ActionListener;
  */
 public class ClearedCellsEffect implements ActionListener {
     GameManager gameManager;
+    ScorePanel scorePanel;
     GridPanel gridPanel;
 
-    ClearedCellsEffect(GameManager gameM, GridPanel gridP) {
+    ClearedCellsEffect(GameManager gameM, GridPanel gridP, ScorePanel scoreP) {
         gameManager = gameM;
+        scorePanel = scoreP;
         gridPanel = gridP;
     }
 
@@ -33,13 +35,15 @@ public class ClearedCellsEffect implements ActionListener {
 
             // set timer to invoke next level of effect
             gridPanel.getGrid().decreaseRecentlyClearedTimer();
-            Timer t = new Timer(50, this);
+            Timer t = new Timer(150, this);
             t.setRepeats(false);
             t.start();
         }
         else if (gridPanel.getGrid().getRecentlyClearedTimer() == 0) {
             // recentlyClearedTimer is 0 -> effect shall end
             gridPanel.getGrid().clearRecentlyClearedCells();
+            // remove recently added score note in ScorePanel
+            scorePanel.resetRecentlyAddedScore();
             gameManager.repaint();
         }
     }

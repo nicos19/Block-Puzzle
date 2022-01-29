@@ -6,6 +6,7 @@ import java.awt.*;
 public class ScorePanel extends JPanel {
     private int highScore = 0;
     private int score = 0;
+    private int recentlyAddedScore = 0;
 
     /**
      * Restores the ScorePanel based on the game state represented by given savegame.
@@ -46,9 +47,18 @@ public class ScorePanel extends JPanel {
      */
     void increaseScoreBy(int number) {
         score += number;
+        recentlyAddedScore = number;
+
         if (score > highScore) {
             highScore = score;
         }
+    }
+
+    /**
+     * Resets the recentlyAddedScore to 0.
+     */
+    void resetRecentlyAddedScore() {
+        recentlyAddedScore = 0;
     }
 
     /**
@@ -65,7 +75,14 @@ public class ScorePanel extends JPanel {
 
         // draw current score
         g.setFont(new Font("Monospaced", Font.BOLD, 20));
-        g.drawString("Score: " + score, 14, 48);
+        if (recentlyAddedScore == 0) {
+            g.drawString("Score: " + score, 14, 48);
+        }
+        else {
+            // player just cleared cells and scored
+            g.drawString("Score: " + score + "  +" + recentlyAddedScore, 14, 48);
+        }
+
     }
 
     @Override protected void paintComponent(Graphics g) {

@@ -10,12 +10,14 @@ import java.awt.Color;
  */
 public class MouseInteractionManager implements MouseListener, MouseMotionListener {
     GameManager gameManager;
+    ScorePanel scorePanel;
     GridPanel gridPanel;
     BlockCombosPanel blockCombosPanel;
 
-    MouseInteractionManager(GameManager gameM,
+    MouseInteractionManager(GameManager gameM, ScorePanel scoreP,
                             GridPanel gridP, BlockCombosPanel blockCombosP) {
         gameManager = gameM;
+        scorePanel = scoreP;
         gridPanel = gridP;
         blockCombosPanel = blockCombosP;
     }
@@ -67,7 +69,8 @@ public class MouseInteractionManager implements MouseListener, MouseMotionListen
             }
             gameManager.repaint();
 
-            ClearedCellsEffect c = new ClearedCellsEffect(gameManager, gridPanel);
+            ClearedCellsEffect c = new ClearedCellsEffect(gameManager, gridPanel,
+                    scorePanel);
             c.tryClearedCellsEffect();
         }
         // check if player selects or saves any BlockCombo
