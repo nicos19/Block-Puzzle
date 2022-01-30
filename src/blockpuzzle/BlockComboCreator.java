@@ -247,8 +247,8 @@ public class BlockComboCreator {
     static BlockCombo create_T_4_Combo() {
         int[] block0 = {0, 0};
         int[] block1 = {1, 0};
-        int[] block2 = {2, 0};
-        int[] block3 = {1, 1};
+        int[] block2 = {-1, 0};
+        int[] block3 = {0, 1};
 
         List<int[]> comboFormation = new ArrayList<>();
         comboFormation.add(block0);
@@ -266,9 +266,9 @@ public class BlockComboCreator {
     static BlockCombo create_T_5_Combo() {
         int[] block0 = {0, 0};
         int[] block1 = {1, 0};
-        int[] block2 = {2, 0};
-        int[] block3 = {1, 1};
-        int[] block4 = {1, 2};
+        int[] block2 = {-1, 0};
+        int[] block3 = {0, 1};
+        int[] block4 = {0, 2};
 
         List<int[]> comboFormation = new ArrayList<>();
         comboFormation.add(block0);
